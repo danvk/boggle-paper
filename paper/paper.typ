@@ -1107,29 +1107,33 @@ cells appear closer to the root of the tree):
 We can produce a tree using this canonical ordering using the following:
 
 ```python
-# Listing 6: Building an orderly tree
+# Listing 8: Building an orderly tree
 def build_orderly_tree(board_class, trie):
   root = SumNode()
+
+  def choice_step(idx, trie, choices):
+    letters = board_class[idx]
+    for letter in letters:
+      if trie.has_child(letter):
+        choices.append((idx, letter))
+        child = trie.child(letter)
+        sum_step(idx, child, choices)
+        choices.pop()
+
+  def sum_step(idx, trie, choices):
+    if trie.is_word():
+      ordered_choices = sorted(
+        choices, key=lambda c: -ORDER[c[0]]
+      )
+      score = SCORES[trie.length()]
+      add_word(root, ordered_choices, score)
+    for n_idx in NEIGHBORS[idx]:
+      if n_idx not in (c[0] for c in choices):
+        choice_step(n_idx, trie, choices)
+
   for i in range(m * n):
-    choice_step(board_class, i, trie, [], root)
+    choice_step(i, trie, [])
   return root
-
-def choice_step(board_class, idx, trie_node, choices, root):
-  letters = board_class[idx]
-  for letter in letters:
-    if trie_node.has_child(letter):
-      choices.append((idx, letter))
-      sum_step(board_class, idx, trie_node.child(letter), choices, root)
-      choices.pop()
-
-def sum_step(board_class, idx, trie_node, choices, root):
-  if trie_node.is_word():
-    ordered_choices = sorted(choices, key=lambda c: -ORDER[c[0]])
-    score = SCORES[trie_node.length()]
-    add_word(root, ordered_choices, score)
-  for n_idx in NEIGHBORS[idx]:
-    if n_idx not in (cell for cell, _letter in choices):
-      choice_step(board_class, n_idx, trie_node, choices, root)
 ```
 
 Because the cells follow a particular order and the resulting tree looks
