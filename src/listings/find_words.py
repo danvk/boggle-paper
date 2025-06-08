@@ -10,31 +10,26 @@ lookup = None
 
 
 # Listing 0: Scoring a Boggle Board
-def score(board: str, trie: Trie) -> int:
+def score(bd: str, trie: Trie) -> int:
   score = 0
   for i in range(m * n):
-    score += score_dfs(board, i, trie, {})
+    score += score_dfs(bd, i, trie, {})
   return score
 
 
 def score_dfs(
-  board: str, idx: int, parent_node: Trie, used
+  bd, idx: int, node: Trie, used
 ) -> int:
   score = 0
   used[idx] = True
-  if parent_node.has_child(board[idx]):
-    trie_node = parent_node.child(board[idx])
-    if (
-      trie_node.is_word()
-      and not trie_node.is_visited()
-    ):
-      score += SCORES[trie_node.length()]
-      trie_node.set_visited()
+  if node.has_child(bd[idx]):
+    n = node.child(bd[idx])
+    if n.is_word() and not n.is_visited():
+      score += SCORES[n.length()]
+      n.set_visited()
     for n_idx in NEIGHBORS[idx]:
       if not used.get(n_idx):
-        score += score_dfs(
-          board, n_idx, trie_node, used
-        )
+        score += score_dfs(bd, n_idx, n, used)
   used[idx] = False
   return score
 

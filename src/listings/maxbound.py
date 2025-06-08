@@ -20,37 +20,33 @@ def set_size(num_cells: int):
 
 # Listing 2: Calcluating max bound on a Boggle board class
 def max_bound(
-  board_class: str, trie: Trie
+  bc: list[str], trie: Trie
 ) -> int:
   bound = 0
   for i in range(m * n):
-    bound += max_bound_dfs(
-      board_class, i, trie, {}
-    )
+    bound += max_bound_dfs(bc, i, trie, {})
   return bound
 
 
 def max_bound_dfs(
-  board_class: str,
+  bc: list[str],
   idx: int,
-  parent_node: Trie,
+  node: Trie,
   used,
 ) -> int:
   max_score = 0
   used[idx] = True
-  letters = board_class[idx]
+  letters = bc[idx]
   for letter in letters:
-    if parent_node.has_child(letter):
+    if node.has_child(letter):
       letter_score = 0
-      trie_node = parent_node.child(letter)
-      if trie_node.is_word():
-        letter_score += SCORES[
-          trie_node.length()
-        ]
+      n = node.child(letter)
+      if n.is_word():
+        letter_score += SCORES[n.length()]
       for n_idx in NEIGHBORS[idx]:
         if not used.get(n_idx):
           letter_score += max_bound_dfs(
-            board_class, n_idx, trie_node, used
+            bc, n_idx, n, used
           )
       max_score = max(max_score, letter_score)
   used[idx] = False
