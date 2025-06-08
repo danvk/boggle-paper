@@ -193,24 +193,26 @@ structure.
 
 ```python
 # Listing 0: Scoring a Boggle Board
-def score(board: str, trie: Trie) -> int:
+def score(bd: str, trie: Trie) -> int:
+  used = {}
+
+  def step(idx: int, node: Trie) -> int:
+    score = 0
+    used[idx] = True
+    if node.has_child(bd[idx]):
+      n = node.child(bd[idx])
+      if n.is_word() and not n.is_visited():
+        score += SCORES[n.length()]
+        n.set_visited()
+      for n_idx in NEIGHBORS[idx]:
+        if not used.get(n_idx):
+          score += step(n_idx, n)
+    used[idx] = False
+    return score
+
   score = 0
   for i in range(m * n):
-    score += score_dfs(board, i, trie, {})
-  return score
-
-def score_dfs(board: str, idx: int, parent_node: Trie, used) -> int:
-  score = 0
-  used[idx] = True
-  if parent_node.has_child(board[idx]):
-    trie_node = parent_node.child(board[idx])
-    if trie_node.is_word() and not trie_node.is_visited():
-      score += SCORES[trie_node.length()]
-      trie_node.set_visited()
-    for n_idx in NEIGHBORS[idx]:
-      if not used.get(n_idx):
-        score += score_dfs(board, n_idx, trie_node, used)
-  used[idx] = False
+    score += step(i, trie)
   return score
 ```
 
@@ -495,27 +497,31 @@ except that we need two loops now: one for neighbors, and a new one for
 each possible letter on each cell:
 
 ```python
-# Listing 1: Calcluating sum bound on a Boggle board class
-def sum_bound(board_class: list[str], trie: Trie) -> int:
+# Listing 3: sum bound on a Boggle board class
+def sum_bound(
+  board_class: list[str], trie: Trie
+) -> int:
+  used = {}
+
+  def step(idx: int, node: Trie) -> int:
+    score = 0
+    used[idx] = True
+    letters = board_class[idx]
+    for letter in letters:
+      if node.has_child(letter):
+        n = node.child(letter)
+        if n.is_word() and not n.is_visited():
+          score += SCORES[n.length()]
+          n.set_visited()
+        for n_idx in NEIGHBORS[idx]:
+          if not used.get(n_idx):
+            score += step(n_idx, n)
+    used[idx] = False
+    return score
+
   score = 0
   for i in range(m * n):
-    score += sum_bound_dfs(board_class, i, trie, {})
-  return score
-
-def sum_bound_dfs(board_class: list[str], idx: int, parent_node: Trie, used) -> int:
-  score = 0
-  used[idx] = True
-  letters = board_class[idx]
-  for letter in letters:
-    if parent_node.has_child(letter):
-      trie_node = parent_node.child(letter)
-      if trie_node.is_word() and not trie_node.is_visited():
-        score += SCORES[trie_node.length()]
-        trie_node.set_visited()
-      for n_idx in NEIGHBORS[idx]:
-        if not used.get(n_idx):
-          score += sum_bound_dfs(board_class, n_idx, trie_node, used)
-  used[idx] = False
+    score += step(i, trie)
   return score
 ```
 
@@ -558,29 +564,33 @@ on a cell instead of the sum. In doing so, we dispense with any attempt
 to enforce the constraint that a word can only be found once.
 
 ```python
-# Listing 2: Calcluating max bound on a Boggle board class
-def max_bound(board_class: str, trie: Trie) -> int:
+# Listing 4: max bound on a Boggle board class
+def max_bound(
+  board_class: list[str], trie: Trie
+) -> int:
+  used = {}
+
+  def step(idx: int, node: Trie) -> int:
+    score = 0
+    used[idx] = True
+    letters = board_class[idx]
+    for letter in letters:
+      if node.has_child(letter):
+        letter_score = 0
+        n = node.child(letter)
+        if n.is_word():
+          letter_score += SCORES[n.length()]
+        for n_idx in NEIGHBORS[idx]:
+          if not used.get(n_idx):
+            letter_score += step(n_idx, n)
+        score = max(score, letter_score)
+    used[idx] = False
+    return score
+
   bound = 0
   for i in range(m * n):
-    bound += max_bound_dfs(board_class, i, trie, {})
+    bound += step(i, trie)
   return bound
-
-def max_bound_dfs(board_class: str, idx: int, parent_node: Trie, used) -> int:
-  max_score = 0
-  used[idx] = True
-  letters = board_class[idx]
-  for letter in letters:
-    if parent_node.has_child(letter):
-      letter_score = 0
-      trie_node = parent_node.child(letter)
-      if trie_node.is_word():
-        letter_score += SCORES[trie_node.length()]
-      for n_idx in NEIGHBORS[idx]:
-        if not used.get(n_idx):
-          letter_score += max_bound_dfs(board_class, n_idx, trie_node, used)
-      max_score = max(max_score, letter_score)
-  used[idx] = False
-  return max_score
 ```
 
 We can see that this is a valid bound because, for any particular board

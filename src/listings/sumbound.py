@@ -18,7 +18,7 @@ def set_size(num_cells: int):
   NEIGHBORS = ALL_NEIGHBORS[(m, n)]
 
 
-# Listing 1: Calcluating sum bound on a Boggle board class
+# Listing 3: sum bound on a Boggle board class
 def sum_bound(
   board_class: list[str], trie: Trie
 ) -> int:

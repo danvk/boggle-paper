@@ -18,7 +18,7 @@ def set_size(num_cells: int):
   NEIGHBORS = ALL_NEIGHBORS[(m, n)]
 
 
-# Listing 2: max bound on a Boggle board class
+# Listing 4: max bound on a Boggle board class
 def max_bound(
   board_class: list[str], trie: Trie
 ) -> int:
