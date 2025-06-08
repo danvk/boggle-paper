@@ -20,35 +20,29 @@ def set_size(num_cells: int):
 
 # Listing 1: Calcluating sum bound on a Boggle board class
 def sum_bound(
-  bc: list[str], trie: Trie
+  board_class: list[str], trie: Trie
 ) -> int:
+  used = {}
+
+  def step(idx: int, node: Trie) -> int:
+    score = 0
+    used[idx] = True
+    letters = board_class[idx]
+    for letter in letters:
+      if node.has_child(letter):
+        n = node.child(letter)
+        if n.is_word() and not n.is_visited():
+          score += SCORES[n.length()]
+          n.set_visited()
+        for n_idx in NEIGHBORS[idx]:
+          if not used.get(n_idx):
+            score += step(n_idx, n)
+    used[idx] = False
+    return score
+
   score = 0
   for i in range(m * n):
-    score += sum_bound_dfs(bc, i, trie, {})
-  return score
-
-
-def sum_bound_dfs(
-  bc: list[str],
-  idx: int,
-  node: Trie,
-  used,
-) -> int:
-  score = 0
-  used[idx] = True
-  letters = bc[idx]
-  for letter in letters:
-    if node.has_child(letter):
-      n = node.child(letter)
-      if n.is_word() and not n.is_visited():
-        score += SCORES[n.length()]
-        n.set_visited()
-      for n_idx in NEIGHBORS[idx]:
-        if not used.get(n_idx):
-          score += sum_bound_dfs(
-            bc, n_idx, n, used
-          )
-  used[idx] = False
+    score += step(i, trie)
   return score
 
 
