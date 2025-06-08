@@ -564,32 +564,34 @@ on a cell instead of the sum. In doing so, we dispense with any attempt
 to enforce the constraint that a word can only be found once.
 
 ```python
-# Listing 4: max bound on a Boggle board class
-def max_bound(
-  board_class: list[str], trie: Trie
-) -> int:
+# Listing 6: Build+Force operation on Tree
+def forced_tree(
+  board_class: list[str], board: str, trie
+):
   used = {}
 
-  def step(idx: int, node: Trie) -> int:
+  def choice_step(idx, trie):
     score = 0
     used[idx] = True
-    letters = board_class[idx]
-    for letter in letters:
-      if node.has_child(letter):
-        letter_score = 0
-        n = node.child(letter)
-        if n.is_word():
-          letter_score += SCORES[n.length()]
-        for n_idx in NEIGHBORS[idx]:
-          if not used.get(n_idx):
-            letter_score += step(n_idx, n)
-        score = max(score, letter_score)
+    letter = board[idx]
+    if trie.has_child(letter):
+      n = trie.child(letter)
+      score = sum_step(idx, n)
     used[idx] = False
+    return score
+
+  def sum_step(idx, trie):
+    score = 0
+    if trie.is_word():
+      score += SCORES[trie.length()]
+    for n_idx in NEIGHBORS[idx]:
+      if not used.get(n_idx):
+        score += choice_step(n_idx, trie)
     return score
 
   bound = 0
   for i in range(m * n):
-    bound += step(i, trie)
+    bound += choice_step(i, trie)
   return bound
 ```
 
