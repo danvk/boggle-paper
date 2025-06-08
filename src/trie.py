@@ -14,7 +14,9 @@ class Trie:
     self._children = {}
 
   def has_child(self, letter: str):
-    return self._children.get(letter) is not None
+    return (
+      self._children.get(letter) is not None
+    )
 
   def child(self, letter: str):
     return self._children.get(letter)
@@ -49,7 +51,9 @@ class Trie:
     letter = word[0]
     if not self.has_child(letter):
       self._children[letter] = Trie()
-    return self.child(letter).add_word(word[1:])
+    return self.child(letter).add_word(
+      word[1:]
+    )
 
   def size(self):
     return (1 if self.is_word() else 0) + sum(
@@ -58,7 +62,9 @@ class Trie:
 
   def num_nodes(self):
     return 1 + sum(
-      c.num_nodes() for c in self.children() if c
+      c.num_nodes()
+      for c in self.children()
+      if c
     )
 
   def reset_marks(self):
@@ -76,7 +82,9 @@ def is_boggle_word(word: str):
   for i, let in enumerate(word):
     if let < "a" or let > "z":
       return False
-    if let == "q" and (i + 1 >= size or word[i + 1] != "u"):
+    if let == "q" and (
+      i + 1 >= size or word[i + 1] != "u"
+    ):
       return False
   return True
 

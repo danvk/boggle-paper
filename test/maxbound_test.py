@@ -1,16 +1,16 @@
-from listings.sumbound import (
+from listings.maxbound import (
   set_size,
-  sum_bound,
+  max_bound,
 )
 from .util import get_enable2k_trie
 
 
-def test_sumbound_fur_far():
+def test_maxbound_fur_far():
   t = get_enable2k_trie()
   t.reset_marks()
   set_size(4)
-  # fur, far, arf
-  assert 3 == sum_bound(
+  # far, arf
+  assert 2 == max_bound(
     [
       "f",
       "au",
@@ -21,11 +21,11 @@ def test_sumbound_fur_far():
   )
 
 
-def test_sumbound_big():
+def test_maxbound_big():
   t = get_enable2k_trie()
   t.reset_marks()
   set_size(9)
-  assert 109524 == sum_bound(
+  assert 9460 == max_bound(
     [
       "lnrsy",
       "chkmpt",

@@ -18,43 +18,43 @@ def set_size(num_cells: int):
   NEIGHBORS = ALL_NEIGHBORS[(m, n)]
 
 
-# Listing 1: Calcluating sum bound on a Boggle board class
-def sum_bound(
-  board_class: list[str], trie: Trie
+# Listing 2: Calcluating max bound on a Boggle board class
+def max_bound(
+  board_class: str, trie: Trie
 ) -> int:
-  score = 0
+  bound = 0
   for i in range(m * n):
-    score += sum_bound_dfs(
+    bound += max_bound_dfs(
       board_class, i, trie, {}
     )
-  return score
+  return bound
 
 
-def sum_bound_dfs(
-  board_class: list[str],
+def max_bound_dfs(
+  board_class: str,
   idx: int,
   parent_node: Trie,
   used,
 ) -> int:
-  score = 0
+  max_score = 0
   used[idx] = True
   letters = board_class[idx]
   for letter in letters:
     if parent_node.has_child(letter):
+      letter_score = 0
       trie_node = parent_node.child(letter)
-      if (
-        trie_node.is_word()
-        and not trie_node.is_visited()
-      ):
-        score += SCORES[trie_node.length()]
-        trie_node.set_visited()
+      if trie_node.is_word():
+        letter_score += SCORES[
+          trie_node.length()
+        ]
       for n_idx in NEIGHBORS[idx]:
         if not used.get(n_idx):
-          score += sum_bound_dfs(
+          letter_score += max_bound_dfs(
             board_class, n_idx, trie_node, used
           )
+      max_score = max(max_score, letter_score)
   used[idx] = False
-  return score
+  return max_score
 
 
 # /Listing
@@ -64,7 +64,7 @@ def main():
   t = make_trie("wordlists/enable2k.txt")
   board_class = sys.argv[1:]
   set_size(len(board_class))
-  points = sum_bound(board_class, t)
+  points = max_bound(board_class, t)
   print(f"{board_class}: {points}")
 
 

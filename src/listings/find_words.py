@@ -24,12 +24,17 @@ def score_dfs(
   used[idx] = True
   if parent_node.has_child(board[idx]):
     trie_node = parent_node.child(board[idx])
-    if trie_node.is_word() and not trie_node.is_visited():
+    if (
+      trie_node.is_word()
+      and not trie_node.is_visited()
+    ):
       score += SCORES[trie_node.length()]
       trie_node.set_visited()
     for n_idx in NEIGHBORS[idx]:
       if not used.get(n_idx):
-        score += score_dfs(board, n_idx, trie_node, used)
+        score += score_dfs(
+          board, n_idx, trie_node, used
+        )
   used[idx] = False
   return score
 
