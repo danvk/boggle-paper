@@ -28,7 +28,7 @@ def sum_bound(
     score = 0
     used[idx] = True
     letters = board_class[idx]
-    for letter in letters:
+    for letter in letters:  # new loop
       if node.has_child(letter):
         n = node.child(letter)
         if n.is_word() and not n.is_visited():

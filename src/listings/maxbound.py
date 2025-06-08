@@ -33,7 +33,8 @@ def max_bound(
         letter_score = 0
         n = node.child(letter)
         if n.is_word():
-          letter_score += SCORES[n.length()]
+          points = SCORES[n.length()]
+          letter_score += points
         for n_idx in NEIGHBORS[idx]:
           if not used.get(n_idx):
             letter_score += step(n_idx, n)
