@@ -12,4 +12,9 @@ dependencies = []
 [dependency-groups]
 dev = [
     "pytest>=8.4.0",
+    "ruff>=0.11.13",
 ]
+
+[tool.ruff]
+line-length = 60
+indent-width = 2

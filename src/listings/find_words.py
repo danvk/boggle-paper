@@ -11,38 +11,40 @@ lookup = None
 
 # Listing 0: Scoring a Boggle Board
 def score(board: str, trie: Trie) -> int:
-    score = 0
-    for i in range(m * n):
-        score += score_dfs(board, i, trie, {})
-    return score
+  score = 0
+  for i in range(m * n):
+    score += score_dfs(board, i, trie, {})
+  return score
 
 
-def score_dfs(board: str, idx: int, parent_node: Trie, used) -> int:
-    score = 0
-    used[idx] = True
-    if parent_node.has_child(board[idx]):
-        trie_node = parent_node.child(board[idx])
-        if trie_node.is_word() and not trie_node.is_visited():
-            score += SCORES[trie_node.length()]
-            trie_node.set_visited()
-        for n_idx in NEIGHBORS[idx]:
-            if not used.get(n_idx):
-                score += score_dfs(board, n_idx, trie_node, used)
-    used[idx] = False
-    return score
+def score_dfs(
+  board: str, idx: int, parent_node: Trie, used
+) -> int:
+  score = 0
+  used[idx] = True
+  if parent_node.has_child(board[idx]):
+    trie_node = parent_node.child(board[idx])
+    if trie_node.is_word() and not trie_node.is_visited():
+      score += SCORES[trie_node.length()]
+      trie_node.set_visited()
+    for n_idx in NEIGHBORS[idx]:
+      if not used.get(n_idx):
+        score += score_dfs(board, n_idx, trie_node, used)
+  used[idx] = False
+  return score
 
 
 # /Listing
 
 
 def main():
-    t = make_trie("wordlists/enable2k.txt")
-    assert score("abcdefghijklmnop", t) == 18
-    t.reset_marks()
-    (board,) = sys.argv[1:]
-    points = score(board, t)
-    print(f"{board}: {points}")
+  t = make_trie("wordlists/enable2k.txt")
+  assert score("abcdefghijklmnop", t) == 18
+  t.reset_marks()
+  (board,) = sys.argv[1:]
+  points = score(board, t)
+  print(f"{board}: {points}")
 
 
 if __name__ == "__main__":
-    main()
+  main()
