@@ -1227,40 +1227,63 @@ is a “merge” operation on Orderly Trees, which is straightforward to
 implement as in Listing N.
 
 ```python
-# Listing 7: merge operation on orderly trees
-# def merge(a: Orderly(N), b: Orderly(N)) -> Orderly(N):
+# Listing 9: merge operation on orderly trees
+# merge: (Orderly(N), Orderly(N)) -> Orderly(N)
 def merge(a: SumNode, b: SumNode) -> SumNode:
-  cell_to_child = {c.cell: c for c in a.children}
+  by_cell = {c.cell: c for c in a.children}
   for bc in b.children:
-    ac = cell_to_child.get(bc.cell)
-    cell_to_child[bc.cell] = merge_choice(ac, bc) if ac else bc
-  children = sorted(cell_to_child.values(), key=lambda c: -ORDER[c.cell])
-  return SumNode(points=a.points + b.points, children=children)
+    ac = by_cell.get(bc.cell)
+    by_cell[bc.cell] = (
+      merge_choice(ac, bc) if ac else bc
+    )
+  ch = sorted(
+    by_cell.values(),
+    key=lambda c: -ORDER[c.cell],
+  )
+  return SumNode(
+    points=a.points + b.points, children=ch
+  )
 
-# def merge_choice(a: OrderlyChoice(N), b: OrderlyChoice(N)) -> OrderlyChoice(N):
-def merge_choice(a: ChoiceNode, b: ChoiceNode) -> ChoiceNode:
-  children = {**a.children}
+
+# merge_choice: (OrderlyChoice(N), OrderlyChoice(N))
+#               -> OrderlyChoice(N)
+def merge_choice(
+  a: ChoiceNode, b: ChoiceNode
+) -> ChoiceNode:
+  ch = {**a.children}
   for choice, bc in b.children.items():
-    ac = children.get(choice)
-    children[choice] = merge(ac, bc) if ac else bc
-  return ChoiceNode(cell=a.cell, children=children)
+    ac = ch.get(choice)
+    ch[choice] = merge(ac, bc) if ac else bc
+  return ChoiceNode(cell=a.cell, children=ch)
 ```
 
 With the “merge” helper, we can define the “branch” operation:
 
 ```python
-# Listing 8: branch operation on orderly trees
-# def branch(o: Orderly(N)) -> list(Orderly(N-1)):
-def branch(o: SumNode, top_cell: int, board_class: list[str]) -> list[SumNode]:
-  top_choice = find(o.children, lambda c: c.cell == top_cell)
+# Listing 10: branch operation on orderly trees
+# branch: Orderly(N) -> list(Orderly(N-1))
+def branch(
+  o: SumNode,
+  top_cell: int,
+  board_class: list[str],
+) -> list[SumNode]:
+  top_choice = find(
+    o.children, lambda c: c.cell == top_cell
+  )
   if not top_choice:
-    # edge case: the choice on the top cell is irrelevant, so o is Orderly(N-1).
-    return [o for _letter in board_class[top_cell]]
+    # cell is irrelevant; o is Orderly(N-1)
+    return [o for _ in board_class[top_cell]]
 
-  other_choices = [c for c in o.children if c.cell != top_cell]
-  skip_tree = SumNode(children=other_choices, points=o.points)  # Orderly(N-1)
+  other_choices = [
+    c for c in o.children if c.cell != top_cell
+  ]
+  skip_tree = SumNode(
+    children=other_choices, points=o.points
+  )  # Orderly(N-1)
   return [
-    merge(top_choice.children[letter], skip_tree)  # both are Orderly(N-1)
+    merge(
+      top_choice.children[letter], skip_tree
+    )  # both are Orderly(N-1)
     if top_choice.children.get(letter)
     else skip_tree  # no words use this letter on the top choice cell
     for letter in board_class[top_cell]
