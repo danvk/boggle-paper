@@ -864,30 +864,35 @@ So what is `Force(BuildTree(C), B)`? We can write out code to calculate
 this by modifying Listing 3:
 
 ```python
-# Listing 4: Build+Force operation on Tree
-def forced_tree(board_class, board, trie):
+# Listing 6: Build+Force operation on Tree
+def forced_tree(
+  board_class: list[str], board: str, trie
+):
+  used = {}
+
+  def choice_step(idx, trie):
+    score = 0
+    used[idx] = True
+    letter = board[idx]
+    if trie.has_child(letter):
+      n = trie.child(letter)
+      score = sum_step(idx, n)
+    used[idx] = False
+    return score
+
+  def sum_step(idx, trie):
+    score = 0
+    if trie.is_word():
+      score += SCORES[trie.length()]
+    for n_idx in NEIGHBORS[idx]:
+      if not used.get(n_idx):
+        score += choice_step(n_idx, trie)
+    return score
+
   bound = 0
   for i in range(m * n):
-    bound += choice_step(board_class, board, i, trie, {})
+    bound += choice_step(i, trie)
   return bound
-
-def choice_step(board_class, board, idx, parent_node, used):
-  score = 0
-  used[idx] = True
-  letter = board[idx]
-  if parent_node.has_child(letter):
-    score = sum_step(board_class, board, idx, parent_node.child(letter), used)
-  used[idx] = False
-  return score
-
-def sum_step(board_class, board, idx, trie_node, used):
-  score = 0
-  if trie_node.is_word():
-    score += SCORES[trie_node.length()]
-  for n_idx in NEIGHBORS[idx]:
-    if not used.get(n_idx):
-      score += choice_step(board_class, board, n_idx, trie_node, used)
-  return score
 ```
 
 We can make a few immediate observations:
@@ -1019,23 +1024,28 @@ Path p = list((cell, letter))
 Then we can define `add_word`:
 
 ```python
-# Listing 5: add_word to sum/choice tree
-def add_word(node: SumNode, path: Path, points: int):
+# Listing 7: add_word to sum/choice tree
+def add_word(
+  node: SumNode, path: Path, points: int
+):
   if len(path) == 0:
     node.points += points
     return node
 
   cell, letter = path[0]
-  choice_child = find(node.children, lambda c: c.cell == cell)
-  if not choice_child:
-    choice_child = ChoiceNode(cell=cell)
-    node.children.append(choice_child)
+  choice_n = find(
+    node.children, lambda c: c.cell == cell
+  )
+  if not choice_n:
+    choice_n = ChoiceNode(cell=cell)
+    node.children.append(choice_n)
 
-  letter_child = choice_child.children.get(letter)
-  if not letter_child:
-    choice_child.children[letter] = letter_child = SumNode()
+  sum_n = choice_n.children.get(letter)
+  if not sum_n:
+    sum_n = SumNode()
+    choice_n.children[letter] = sum_n
 
-  return add_word(letter_child, path[1:], points)
+  return add_word(sum_n, path[1:], points)
 ```
 
 - Lemma: This produces an identical tree.
