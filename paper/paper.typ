@@ -1358,29 +1358,37 @@ onto their stacks. We can maintain a bound as we do this. If the bound
 ever drops below `S_high`, we can abandon this search path.
 
 ```python
-# Listing 9: orderly_bound
+# Listing 11: orderly_bound
 # Assumes N >= 1
-# def orderly_bound(root: Orderly(N), S_high: int):
-def orderly_bound(root: SumNode, board_class: list[str], S_high: int):
+def orderly_bound(
+  root: SumNode,  # Orderly(N)
+  board_class: list[str],
+  S_high: int,
+):
   def step(
     points: int,
     idx: int,
-    choices: list[char],  # letters chosen on previous cells
+    # letters chosen on previous cells
+    choices: list[char],
     stack: list[ChoiceNode],
   ):
     b = points + sum(bound(n) for n in stack)
     if b < S_high:
-      return  # This board class has been eliminated
+      return  # This path is eliminated
     if idx == N:
       # complete board that can't be eliminated
       record_candidate_board(choices, b)
       return
 
-    # Try each letter on the next cell in the canonical order.
+    # Try each letter on the next cell in order.
     cell = CELL_ORDER[idx]
     for letter in board_class[cell]:
-      next_nodes = [n for n in stack if n.cell == cell]
-      next_stack = [n for n in stack if n.cell != cell]
+      next_nodes = [
+        n for n in stack if n.cell == cell
+      ]
+      next_stack = [
+        n for n in stack if n.cell != cell
+      ]
       next_points = points
       next_choices = choices + [letter]
       for node in next_nodes:
@@ -1389,7 +1397,12 @@ def orderly_bound(root: SumNode, board_class: list[str], S_high: int):
           next_stack += letter_node.children
           next_points += letter_node.points
 
-      step(next_points, idx + 1, next_choices, next_stack)
+      step(
+        next_points,
+        idx + 1,
+        next_choices,
+        next_stack,
+      )
 
   step(root.points, 0, [], root.children)
 ```
