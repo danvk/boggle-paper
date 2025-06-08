@@ -721,34 +721,39 @@ First, we refactor `max_bound` to use two functions. These will become
 two types of nodes in our tree:
 
 ```python
-# Listing 3: Calculating max bound with two mutally recursive functions
-def max_bound(board_class: str, trie: Trie) -> int:
+# Listing 5: max bound with two functions
+def max_bound(
+  board_class: list[str], trie: Trie
+) -> int:
+  used = {}
+
+  def choice_step(idx, node):
+    score = 0
+    used[idx] = True
+    letters = board_class[idx]
+    for letter in letters:
+      if node.has_child(letter):
+        child = node.child(letter)
+        score = max(
+          score,
+          sum_step(idx, child),
+        )
+    used[idx] = False
+    return score
+
+  def sum_step(idx, node):
+    score = 0
+    if node.is_word():
+      score += SCORES[node.length()]
+    for n_idx in NEIGHBORS[idx]:
+      if not used.get(n_idx):
+        score += choice_step(n_idx, node)
+    return score
+
   bound = 0
   for i in range(m * n):
-    bound += choice_step(board_class, i, trie, {})
+    bound += choice_step(i, trie)
   return bound
-
-def choice_step(board_class, idx, parent_node, used):
-  max_score = 0
-  used[idx] = True
-  letters = board_class[idx]
-  for letter in letters:
-    if parent_node.has_child(letter):
-      max_score = max(
-        max_score,
-        sum_step(board_class, idx, parent_node.child(letter), used),
-      )
-  used[idx] = False
-  return max_score
-
-def sum_step(board_class, idx, trie_node, used):
-  score = 0
-  if trie_node.is_word():
-    score += SCORES[trie_node.length()]
-  for n_idx in NEIGHBORS[idx]:
-    if not used.get(n_idx):
-      score += choice_step(board_class, n_idx, trie_node, used)
-  return score
 ```
 
 This is a simple transformation of the previous `max_bound`. With this
