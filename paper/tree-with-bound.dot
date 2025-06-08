@@ -1,0 +1,174 @@
+graph {
+rankdir=LR;
+nodesep=0.1;
+node [shape="rect" penwidth="0" fontname="Comic Sans MS"];
+edge [fontname="Comic Sans MS"];
+r [label="+" penwidth="1"];
+subgraph cluster_r { r; penwidth="0" margin=0 label="bound=13"; labelloc="b"; }
+r0_0 [label="cell=0" style="rounded, filled"];
+subgraph cluster_r0_0 { r0_0; penwidth="0" margin=0 label="4"; labelloc="b"; }
+r0_0t [label="+" penwidth="1"];
+subgraph cluster_r0_0t { r0_0t; penwidth="0" margin=0 label="4"; labelloc="b"; }
+r0_0t0_1 [label="1" style="rounded, filled"];
+subgraph cluster_r0_0t0_1 { r0_0t0_1; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t0_1a [label="+" penwidth="1"];
+subgraph cluster_r0_0t0_1a { r0_0t0_1a; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t0_1a0_3 [label="3" style="rounded, filled"];
+subgraph cluster_r0_0t0_1a0_3 { r0_0t0_1a0_3; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t0_1a0_3r [label="+1\nTAR" penwidth="1"];
+subgraph cluster_r0_0t0_1a0_3r { r0_0t0_1a0_3r; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t0_1a0_3 -- r0_0t0_1a0_3r [label="R"]
+r0_0t0_1a -- r0_0t0_1a0_3
+r0_0t0_1 -- r0_0t0_1a [label="A"]
+r0_0t -- r0_0t0_1
+r0_0t1_2 [label="2" style="rounded, filled"];
+subgraph cluster_r0_0t1_2 { r0_0t1_2; penwidth="0" margin=0 label="3"; labelloc="b"; }
+r0_0t1_2i [label="+" penwidth="1"];
+subgraph cluster_r0_0t1_2i { r0_0t1_2i; penwidth="0" margin=0 label="3"; labelloc="b"; }
+r0_0t1_2i0_1 [label="1" style="rounded, filled"];
+subgraph cluster_r0_0t1_2i0_1 { r0_0t1_2i0_1; penwidth="0" margin=0 label="2"; labelloc="b"; }
+r0_0t1_2i0_1e [label="+1\nTIE" penwidth="1"];
+subgraph cluster_r0_0t1_2i0_1e { r0_0t1_2i0_1e; penwidth="0" margin=0 label="2"; labelloc="b"; }
+r0_0t1_2i0_1e0_3 [label="3" style="rounded, filled"];
+subgraph cluster_r0_0t1_2i0_1e0_3 { r0_0t1_2i0_1e0_3; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t1_2i0_1e0_3r [label="+1\nTIER" penwidth="1"];
+subgraph cluster_r0_0t1_2i0_1e0_3r { r0_0t1_2i0_1e0_3r; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t1_2i0_1e0_3 -- r0_0t1_2i0_1e0_3r [label="R"]
+r0_0t1_2i0_1e -- r0_0t1_2i0_1e0_3
+r0_0t1_2i0_1 -- r0_0t1_2i0_1e [label="E"]
+r0_0t1_2i -- r0_0t1_2i0_1
+r0_0t1_2i1_3 [label="3" style="rounded, filled"];
+subgraph cluster_r0_0t1_2i1_3 { r0_0t1_2i1_3; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t1_2i1_3r [label="+" penwidth="1"];
+subgraph cluster_r0_0t1_2i1_3r { r0_0t1_2i1_3r; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t1_2i1_3r0_1 [label="1" style="rounded, filled"];
+subgraph cluster_r0_0t1_2i1_3r0_1 { r0_0t1_2i1_3r0_1; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t1_2i1_3r0_1e [label="+1\nTIRE" penwidth="1"];
+subgraph cluster_r0_0t1_2i1_3r0_1e { r0_0t1_2i1_3r0_1e; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r0_0t1_2i1_3r0_1 -- r0_0t1_2i1_3r0_1e [label="E"]
+r0_0t1_2i1_3r -- r0_0t1_2i1_3r0_1
+r0_0t1_2i1_3 -- r0_0t1_2i1_3r [label="R"]
+r0_0t1_2i -- r0_0t1_2i1_3
+r0_0t1_2 -- r0_0t1_2i [label="I"]
+r0_0t -- r0_0t1_2
+r0_0 -- r0_0t [label="T"]
+r -- r0_0
+r1_1 [label="cell=1" style="rounded, filled"];
+subgraph cluster_r1_1 { r1_1; penwidth="0" margin=0 label="4"; labelloc="b"; }
+r1_1a [label="+" penwidth="1"];
+subgraph cluster_r1_1a { r1_1a; penwidth="0" margin=0 label="4"; labelloc="b"; }
+r1_1a0_2 [label="2" style="rounded, filled"];
+subgraph cluster_r1_1a0_2 { r1_1a0_2; penwidth="0" margin=0 label="3"; labelloc="b"; }
+r1_1a0_2i [label="+" penwidth="1"];
+subgraph cluster_r1_1a0_2i { r1_1a0_2i; penwidth="0" margin=0 label="3"; labelloc="b"; }
+r1_1a0_2i0_0 [label="0" style="rounded, filled"];
+subgraph cluster_r1_1a0_2i0_0 { r1_1a0_2i0_0; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r1_1a0_2i0_0t [label="+1\nAIT" penwidth="1"];
+subgraph cluster_r1_1a0_2i0_0t { r1_1a0_2i0_0t; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r1_1a0_2i0_0 -- r1_1a0_2i0_0t [label="T"]
+r1_1a0_2i -- r1_1a0_2i0_0
+r1_1a0_2i1_3 [label="3" style="rounded, filled"];
+subgraph cluster_r1_1a0_2i1_3 { r1_1a0_2i1_3; penwidth="0" margin=0 label="2"; labelloc="b"; }
+r1_1a0_2i1_3r [label="+1\nAIR" penwidth="1"];
+subgraph cluster_r1_1a0_2i1_3r { r1_1a0_2i1_3r; penwidth="0" margin=0 label="2"; labelloc="b"; }
+r1_1a0_2i1_3r0_0 [label="0" style="rounded, filled"];
+subgraph cluster_r1_1a0_2i1_3r0_0 { r1_1a0_2i1_3r0_0; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r1_1a0_2i1_3r0_0t [label="+1\nAIRT" penwidth="1"];
+subgraph cluster_r1_1a0_2i1_3r0_0t { r1_1a0_2i1_3r0_0t; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r1_1a0_2i1_3r0_0 -- r1_1a0_2i1_3r0_0t [label="T"]
+r1_1a0_2i1_3r -- r1_1a0_2i1_3r0_0
+r1_1a0_2i1_3 -- r1_1a0_2i1_3r [label="R"]
+r1_1a0_2i -- r1_1a0_2i1_3
+r1_1a0_2 -- r1_1a0_2i [label="I"]
+r1_1a -- r1_1a0_2
+r1_1a1_3 [label="3" style="rounded, filled"];
+subgraph cluster_r1_1a1_3 { r1_1a1_3; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r1_1a1_3r [label="+" penwidth="1"];
+subgraph cluster_r1_1a1_3r { r1_1a1_3r; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r1_1a1_3r0_0 [label="0" style="rounded, filled"];
+subgraph cluster_r1_1a1_3r0_0 { r1_1a1_3r0_0; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r1_1a1_3r0_0t [label="+1\nART" penwidth="1"];
+subgraph cluster_r1_1a1_3r0_0t { r1_1a1_3r0_0t; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r1_1a1_3r0_0 -- r1_1a1_3r0_0t [label="T"]
+r1_1a1_3r -- r1_1a1_3r0_0
+r1_1a1_3 -- r1_1a1_3r [label="R"]
+r1_1a -- r1_1a1_3
+r1_1 -- r1_1a [label="A"]
+r -- r1_1
+r2_2 [label="cell=2" style="rounded, filled"];
+subgraph cluster_r2_2 { r2_2; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r2_2i [label="+" penwidth="1"];
+subgraph cluster_r2_2i { r2_2i; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r2_2i0_3 [label="3" style="rounded, filled"];
+subgraph cluster_r2_2i0_3 { r2_2i0_3; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r2_2i0_3r [label="+" penwidth="1"];
+subgraph cluster_r2_2i0_3r { r2_2i0_3r; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r2_2i0_3r0_1 [label="1" style="rounded, filled"];
+subgraph cluster_r2_2i0_3r0_1 { r2_2i0_3r0_1; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r2_2i0_3r0_1e [label="+1\nIRE" penwidth="1"];
+subgraph cluster_r2_2i0_3r0_1e { r2_2i0_3r0_1e; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r2_2i0_3r0_1 -- r2_2i0_3r0_1e [label="E"]
+r2_2i0_3r -- r2_2i0_3r0_1
+r2_2i0_3 -- r2_2i0_3r [label="R"]
+r2_2i -- r2_2i0_3
+r2_2 -- r2_2i [label="I"]
+r -- r2_2
+r3_3 [label="cell=3" style="rounded, filled"];
+subgraph cluster_r3_3 { r3_3; penwidth="0" margin=0 label="4"; labelloc="b"; }
+r3_3r [label="+" penwidth="1"];
+subgraph cluster_r3_3r { r3_3r; penwidth="0" margin=0 label="4"; labelloc="b"; }
+r3_3r0_1 [label="1" style="rounded, filled"];
+subgraph cluster_r3_3r0_1 { r3_3r0_1; penwidth="0" margin=0 label="2"; labelloc="b"; }
+r3_3r0_1a [label="+" penwidth="1"];
+subgraph cluster_r3_3r0_1a { r3_3r0_1a; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r0_1a0_0 [label="0" style="rounded, filled"];
+subgraph cluster_r3_3r0_1a0_0 { r3_3r0_1a0_0; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r0_1a0_0t [label="+1\nRAT" penwidth="1"];
+subgraph cluster_r3_3r0_1a0_0t { r3_3r0_1a0_0t; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r0_1a0_0 -- r3_3r0_1a0_0t [label="T"]
+r3_3r0_1a -- r3_3r0_1a0_0
+r3_3r0_1 -- r3_3r0_1a [label="A"]
+r3_3r0_1e [label="+" penwidth="1"];
+subgraph cluster_r3_3r0_1e { r3_3r0_1e; penwidth="0" margin=0 label="2"; labelloc="b"; }
+r3_3r0_1e0_0 [label="0" style="rounded, filled"];
+subgraph cluster_r3_3r0_1e0_0 { r3_3r0_1e0_0; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r0_1e0_0t [label="+1\nRET" penwidth="1"];
+subgraph cluster_r3_3r0_1e0_0t { r3_3r0_1e0_0t; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r0_1e0_0 -- r3_3r0_1e0_0t [label="T"]
+r3_3r0_1e -- r3_3r0_1e0_0
+r3_3r0_1e1_2 [label="2" style="rounded, filled"];
+subgraph cluster_r3_3r0_1e1_2 { r3_3r0_1e1_2; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r0_1e1_2i [label="+1\nREI" penwidth="1"];
+subgraph cluster_r3_3r0_1e1_2i { r3_3r0_1e1_2i; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r0_1e1_2 -- r3_3r0_1e1_2i [label="I"]
+r3_3r0_1e -- r3_3r0_1e1_2
+r3_3r0_1 -- r3_3r0_1e [label="E"]
+r3_3r -- r3_3r0_1
+r3_3r1_2 [label="2" style="rounded, filled"];
+subgraph cluster_r3_3r1_2 { r3_3r1_2; penwidth="0" margin=0 label="2"; labelloc="b"; }
+r3_3r1_2i [label="+" penwidth="1"];
+subgraph cluster_r3_3r1_2i { r3_3r1_2i; penwidth="0" margin=0 label="2"; labelloc="b"; }
+r3_3r1_2i0_0 [label="0" style="rounded, filled"];
+subgraph cluster_r3_3r1_2i0_0 { r3_3r1_2i0_0; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r1_2i0_0t [label="+" penwidth="1"];
+subgraph cluster_r3_3r1_2i0_0t { r3_3r1_2i0_0t; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r1_2i0_0t0_1 [label="1" style="rounded, filled"];
+subgraph cluster_r3_3r1_2i0_0t0_1 { r3_3r1_2i0_0t0_1; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r1_2i0_0t0_1e [label="+1\nRITE" penwidth="1"];
+subgraph cluster_r3_3r1_2i0_0t0_1e { r3_3r1_2i0_0t0_1e; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r1_2i0_0t0_1 -- r3_3r1_2i0_0t0_1e [label="E"]
+r3_3r1_2i0_0t -- r3_3r1_2i0_0t0_1
+r3_3r1_2i0_0 -- r3_3r1_2i0_0t [label="T"]
+r3_3r1_2i -- r3_3r1_2i0_0
+r3_3r1_2i1_1 [label="1" style="rounded, filled"];
+subgraph cluster_r3_3r1_2i1_1 { r3_3r1_2i1_1; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r1_2i1_1a [label="+1\nRIA" penwidth="1"];
+subgraph cluster_r3_3r1_2i1_1a { r3_3r1_2i1_1a; penwidth="0" margin=0 label="1"; labelloc="b"; }
+r3_3r1_2i1_1 -- r3_3r1_2i1_1a [label="A"]
+r3_3r1_2i -- r3_3r1_2i1_1
+r3_3r1_2 -- r3_3r1_2i [label="I"]
+r3_3r -- r3_3r1_2
+r3_3 -- r3_3r [label="R"]
+r -- r3_3
+}
+

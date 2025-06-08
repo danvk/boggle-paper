@@ -1,0 +1,118 @@
+graph {
+rankdir=LR;
+nodesep=0.1;
+node [shape="rect" penwidth="0" fontname="Comic Sans MS"];
+edge [fontname="Comic Sans MS"];
+r [label="bound=13" penwidth="1"];
+r0_0 [label="4" style="rounded, filled"];
+r0_0t [label="4" penwidth="1"];
+r0_0t0_1 [label="1" style="rounded, filled"];
+r0_0t0_1a [label="1" penwidth="1"];
+r0_0t0_1a0_3 [label="1" style="rounded, filled"];
+r0_0t0_1a0_3r [label="1" penwidth="1"];
+r0_0t0_1a0_3 -- r0_0t0_1a0_3r [label="R"]
+r0_0t0_1a -- r0_0t0_1a0_3
+r0_0t0_1 -- r0_0t0_1a [label="A"]
+r0_0t -- r0_0t0_1
+r0_0t1_2 [label="3" style="rounded, filled"];
+r0_0t1_2i [label="3" penwidth="1"];
+r0_0t1_2i0_1 [label="2" style="rounded, filled"];
+r0_0t1_2i0_1e [label="2" penwidth="1"];
+r0_0t1_2i0_1e0_3 [label="1" style="rounded, filled"];
+r0_0t1_2i0_1e0_3r [label="1" penwidth="1"];
+r0_0t1_2i0_1e0_3 -- r0_0t1_2i0_1e0_3r [label="R"]
+r0_0t1_2i0_1e -- r0_0t1_2i0_1e0_3
+r0_0t1_2i0_1 -- r0_0t1_2i0_1e [label="E"]
+r0_0t1_2i -- r0_0t1_2i0_1
+r0_0t1_2i1_3 [label="1" style="rounded, filled"];
+r0_0t1_2i1_3r [label="1" penwidth="1"];
+r0_0t1_2i1_3r0_1 [label="1" style="rounded, filled"];
+r0_0t1_2i1_3r0_1e [label="1" penwidth="1"];
+r0_0t1_2i1_3r0_1 -- r0_0t1_2i1_3r0_1e [label="E"]
+r0_0t1_2i1_3r -- r0_0t1_2i1_3r0_1
+r0_0t1_2i1_3 -- r0_0t1_2i1_3r [label="R"]
+r0_0t1_2i -- r0_0t1_2i1_3
+r0_0t1_2 -- r0_0t1_2i [label="I"]
+r0_0t -- r0_0t1_2
+r0_0 -- r0_0t [label="T"]
+r -- r0_0
+r1_1 [label="4" style="rounded, filled"];
+r1_1a [label="4" penwidth="1"];
+r1_1a0_2 [label="3" style="rounded, filled"];
+r1_1a0_2i [label="3" penwidth="1"];
+r1_1a0_2i0_0 [label="1" style="rounded, filled"];
+r1_1a0_2i0_0t [label="1" penwidth="1"];
+r1_1a0_2i0_0 -- r1_1a0_2i0_0t [label="T"]
+r1_1a0_2i -- r1_1a0_2i0_0
+r1_1a0_2i1_3 [label="2" style="rounded, filled"];
+r1_1a0_2i1_3r [label="2" penwidth="1"];
+r1_1a0_2i1_3r0_0 [label="1" style="rounded, filled"];
+r1_1a0_2i1_3r0_0t [label="1" penwidth="1"];
+r1_1a0_2i1_3r0_0 -- r1_1a0_2i1_3r0_0t [label="T"]
+r1_1a0_2i1_3r -- r1_1a0_2i1_3r0_0
+r1_1a0_2i1_3 -- r1_1a0_2i1_3r [label="R"]
+r1_1a0_2i -- r1_1a0_2i1_3
+r1_1a0_2 -- r1_1a0_2i [label="I"]
+r1_1a -- r1_1a0_2
+r1_1a1_3 [label="1" style="rounded, filled"];
+r1_1a1_3r [label="1" penwidth="1"];
+r1_1a1_3r0_0 [label="1" style="rounded, filled"];
+r1_1a1_3r0_0t [label="1" penwidth="1"];
+r1_1a1_3r0_0 -- r1_1a1_3r0_0t [label="T"]
+r1_1a1_3r -- r1_1a1_3r0_0
+r1_1a1_3 -- r1_1a1_3r [label="R"]
+r1_1a -- r1_1a1_3
+r1_1 -- r1_1a [label="A"]
+r -- r1_1
+r2_2 [label="1" style="rounded, filled"];
+r2_2i [label="1" penwidth="1"];
+r2_2i0_3 [label="1" style="rounded, filled"];
+r2_2i0_3r [label="1" penwidth="1"];
+r2_2i0_3r0_1 [label="1" style="rounded, filled"];
+r2_2i0_3r0_1e [label="1" penwidth="1"];
+r2_2i0_3r0_1 -- r2_2i0_3r0_1e [label="E"]
+r2_2i0_3r -- r2_2i0_3r0_1
+r2_2i0_3 -- r2_2i0_3r [label="R"]
+r2_2i -- r2_2i0_3
+r2_2 -- r2_2i [label="I"]
+r -- r2_2
+r3_3 [label="4" style="rounded, filled"];
+r3_3r [label="4" penwidth="1"];
+r3_3r0_1 [label="2" style="rounded, filled"];
+r3_3r0_1a [label="1" penwidth="1"];
+r3_3r0_1a0_0 [label="1" style="rounded, filled"];
+r3_3r0_1a0_0t [label="1" penwidth="1"];
+r3_3r0_1a0_0 -- r3_3r0_1a0_0t [label="T"]
+r3_3r0_1a -- r3_3r0_1a0_0
+r3_3r0_1 -- r3_3r0_1a [label="A"]
+r3_3r0_1e [label="2" penwidth="1"];
+r3_3r0_1e0_0 [label="1" style="rounded, filled"];
+r3_3r0_1e0_0t [label="1" penwidth="1"];
+r3_3r0_1e0_0 -- r3_3r0_1e0_0t [label="T"]
+r3_3r0_1e -- r3_3r0_1e0_0
+r3_3r0_1e1_2 [label="1" style="rounded, filled"];
+r3_3r0_1e1_2i [label="1" penwidth="1"];
+r3_3r0_1e1_2 -- r3_3r0_1e1_2i [label="I"]
+r3_3r0_1e -- r3_3r0_1e1_2
+r3_3r0_1 -- r3_3r0_1e [label="E"]
+r3_3r -- r3_3r0_1
+r3_3r1_2 [label="2" style="rounded, filled"];
+r3_3r1_2i [label="2" penwidth="1"];
+r3_3r1_2i0_0 [label="1" style="rounded, filled"];
+r3_3r1_2i0_0t [label="1" penwidth="1"];
+r3_3r1_2i0_0t0_1 [label="1" style="rounded, filled"];
+r3_3r1_2i0_0t0_1e [label="1" penwidth="1"];
+r3_3r1_2i0_0t0_1 -- r3_3r1_2i0_0t0_1e [label="E"]
+r3_3r1_2i0_0t -- r3_3r1_2i0_0t0_1
+r3_3r1_2i0_0 -- r3_3r1_2i0_0t [label="T"]
+r3_3r1_2i -- r3_3r1_2i0_0
+r3_3r1_2i1_1 [label="1" style="rounded, filled"];
+r3_3r1_2i1_1a [label="1" penwidth="1"];
+r3_3r1_2i1_1 -- r3_3r1_2i1_1a [label="A"]
+r3_3r1_2i -- r3_3r1_2i1_1
+r3_3r1_2 -- r3_3r1_2i [label="I"]
+r3_3r -- r3_3r1_2
+r3_3 -- r3_3r [label="R"]
+r -- r3_3
+}
+
