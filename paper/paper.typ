@@ -929,11 +929,11 @@ E F E
 Has $"Score"(B) = 3$ (”bee”, “fee”, “beef”) but $"Multi"(B) = 12$ because
 each word can be found along four distinct paths.
 
-- Lemma: $"Multi"(B) >= "Score"(B)$. This is clear from the definition. The
+- *Lemma*: $"Multi"(B) >= "Score"(B)$. This is clear from the definition. The
   Multiboggle score is an upper bound on the Boggle score.
-- Lemma: $"Multi"(B) = "Score"(B)$ if $B$ does not contain repeated letters.
+- *Lemma*: $"Multi"(B) = "Score"(B)$ if $B$ does not contain repeated letters.
   (The converse is not true.)
-- Lemma: $"max_bound"({B}) = "Multi"(B)$.
+- *Lemma*: $"max_bound"({B}) = "Multi"(B)$.
 
 In other words, the `max_bound` converges to the Multiboggle score as
 you progressively force cells on a board class.
@@ -942,7 +942,7 @@ Putting this together, if $T="BuildTree"(C)$ then we have:
 
 $ "Score"(B) &<= "Multi"(B) \
 &= "Force"(T, B) \
-&<= "Bound"(T) forall B in C $
+&<= "Bound"(T) #h(0.5em) forall B in C $
 
 So if we can show that $"Force"(T, B) = "Multi"(B)$ for all boards in a
 board class, then $"Bound"(T)$ is a valid upper bound for $"Score"(C)$.
@@ -976,32 +976,34 @@ address this issue later in the paper.
 
 === Sum/Choice Satisfiability is NP-Hard
 <sumchoice-satisfiability-is-np-hard>
-We seek boards `B` in a board class `C` such that
-`Force(T, B) >= S_high`. Since each board in a board class represents a
-choice of letter on each of the MxN cells, we can think of this as a
+We seek boards $B$ in a board class $C$ such that
+$"Force"(T, B) >= S_"high"$. Since each board in a board class represents a
+choice of letter on each of the cells, we can think of this as a
 satisfiability problem.
 
-- Theorem: Determining whether there exists `B` such that
-  `Force(T, B) >= S_high` is NP-Hard.
+*Theorem*: Determining whether there exists $B$ such that
+  $"Force"(T, B) >= S_"high"$ is NP-Hard.
 
 Proof: We map from 3-CNF, a known NP-Hard problem, to the Sum/Choice
 Tree satisfiability problem.
 
-Suppose we have a 3-CNF formula with `m` clauses on `x_1, x_2, ... x_n`.
+Suppose we have a 3-CNF formula with $m$ clauses on $x_1, x_2, ... x_n$.
 
 For each clause, we construct a tree which evaluates to 1 if the clause
 is satisfied and zero if it is not satisfied.
 
-- If the clause contains a single term `a`, then we model this as a
-  ChoiceNode on cell `a`.
-- If the clause is `a OR b`, we model is as a tree with two layers of
+- If the clause contains a single term $a$, then we model this as a
+  ChoiceNode on cell $a$.
+- If the clause is $a or b$, we model is as a tree with two layers of
   `ChoiceNode`s.
-- If the clause is `a OR b OR c`, we model it as a tree with three
+- If the clause is $a or b or c$, we model it as a tree with three
   layers of `ChoiceNode`s.
 
-Finally, we create a root `SumNode` `T` with the `m` `ChoiceNode`s as
-children. By construction, `\exists B s.t. Force(T, B) = m` iff there
-are `x_i` that satisfy the 3-SAT problem. So if we can solve the
+// TODO: show one of these
+
+Finally, we create a root `SumNode` $T$ with the $m$ `ChoiceNode`s as
+children. By construction, $exists B | "Force"(T, B) = m$ iff there
+are $x_i$ that satisfy the 3-SAT problem. So if we can solve the
 satisfiability problem for Sum/Choice trees, we can also solve it for
 3-CNF. Since 3-CNF is known to be NP-Hard, this means that Sum/Choice
 satisfiability is NP-Hard as well.
@@ -1060,13 +1062,15 @@ def add_word(
   return add_word(sum_n, path[1:], points)
 ```
 
-- Lemma: This produces an identical tree.
+*Lemma*: This produces an identical tree.
 
 Every path to points is present and identical in both constructions.
 
 This shift in perspectives allows us to establish the critical result:
 
-- Theorem: anagramming words before adding them preserves the invariant
+*Theorem*: Anagramming words before adding them preserves the invariant.
+
+// TODO: is "anagramming" a word? Maybe "Rearranging letters?"
 
 This can be seen by treating the `Force` operation as a sum across all
 SumNodes with points in the tree, conditioned on whether the path to
@@ -1074,27 +1078,29 @@ that node is realized in the board. We can define the path to a node by
 tracing it back to the root:
 
 ```
-Path(node: SumNode) =
-  [] if node is the root
-  Path(node.parent.parent) ++ [(node.parent.cell, node.letter)]
+Path(n: SumNode) =
+  [] if n is the root
+  Path(n.parent.parent) ++ [(n.parent.cell, n.letter)]
 ```
+
+// TODO: Path is a type earlier
+// TOOD: n.letter isn't defined
 
 Then we can reformulate `Force` as a sum across compatible paths:
 
-```
-Force(T, B) = sum(
-  node.points
-  \forall node in T
-  s.t. AND(B_{n.cell} = n.letter \forall n in Path(node))
-)
-```
+
+$ "Force"(T, B) = \ sum(
+  "node"."points"
+  forall "node" in T \
+  | "AND"_(n in "Path"("node"))(B_(n."cell") = n."letter")
+) $
 
 The anagramming theorem is a natural consequence of `AND` being
 commutative.
 
 Previously, words were added to the tree in the order in which they were
 spelled. We can see now, however, that this was a choice. To get more
-consistent ordering and lower bounds, we can define a canonical order
+consistent ordering, and thus lower bounds, we can define a canonical order
 for the cells and sort the paths to words accordingly before adding them
 to the tree.
 
@@ -1116,8 +1122,9 @@ cells appear closer to the root of the tree):
   , kind: table
   )
 
-We can produce a tree using this canonical ordering using the following:
+We can produce a tree using this ordering:
 
+#block(
 ```python
 # Listing 8: Building an orderly tree
 def build_orderly_tree(board_class, trie):
@@ -1146,14 +1153,16 @@ def build_orderly_tree(board_class, trie):
   for i in range(m * n):
     choice_step(i, trie, [])
   return root
-```
+```,
+breakable: false
+)
 
 Because the cells follow a particular order and the resulting tree looks
 more “well-ordered,” we refer to these as Orderly Sum/Choice Trees or
 just “Orderly Trees.”
 
 Using a canonical order for the cells naturally synchronizes choices
-across subtrees, particularly the choices with a low index (the center).
+across subtrees, particularly the choices with a high index (the center).
 This typically results in smaller trees with lower bounds, especially
 for large board classes.
 
@@ -1167,7 +1176,7 @@ node.
   ]
 )
 
-Note that the tree is smaller (29 vs. 56 nodes) and the bound on the
+Note that the tree is smaller (56→29 nodes) and the bound on the
 root node has dropped from 13 to 7. Before, there were 8 ChoiceNodes
 with cell=1, but now there are only 2.
 
@@ -1177,7 +1186,7 @@ is more dramatic for larger board classes:
 #figure(
   align(center)[#table(
   columns: 3,
-  align: (auto,auto,auto,),
+  align: (right,right,right,),
   table.header([#strong[Board];], [#strong[max\_bound];], [#strong[Orderly
     bound];],),
   table.hline(),
@@ -1193,15 +1202,15 @@ is more dramatic for larger board classes:
   , kind: table
   )
 
-By construction, no ChoiceNode `n` in an Orderly Tree will have
+By construction, no ChoiceNode $n$ in an Orderly Tree will have
 `ORDER[n.cell]` greater than any of its parents. So if a path begins
 14→6 in the tree, then it may only continue to cells 1 or 4, since those
-are higher numbers. (14→6→9 is a valid path, but it would be added to
-the tree as 14→9→6.) Intuitively, if cell `A` has a child on cell `B`,
+are lower numbers. (14→6→9 is a valid path, but it would be added to
+the tree as 14→9→6.) Intuitively, if cell $A$ has a child on cell $B$,
 then this represents all the paths through the board that skip cells
-between `A` and `B` in the canonical order.
+between $A$ and $B$ in the canonical order.
 
-We can use this intuition to define `OrderlyTree(N)`:
+We can use this intuition to define $"Orderly"(N)$:
 
 ```
 Orderly(n: Int)
@@ -1218,6 +1227,7 @@ We can make a few more observations about Orderly Trees:
 
 - The Orderly Tree for a board class, and hence the “orderly bound,” is
   dependent on the order of cells that we choose.
+- The tree no longer bears any resemblance to a plausible DFS of the board.
 - We can no longer associate SumNodes with single words. For example,
   the “+3” node on the top right of the tree visualization includes the
   words TAR, RAT and ART. If you can find one of these, you can find all
@@ -1256,7 +1266,6 @@ def merge(a: SumNode, b: SumNode) -> SumNode:
     points=a.points + b.points, children=ch
   )
 
-
 # merge_choice: (OrderlyChoice(N), OrderlyChoice(N))
 #               -> OrderlyChoice(N)
 def merge_choice(
@@ -1269,25 +1278,29 @@ def merge_choice(
   return ChoiceNode(cell=a.cell, children=ch)
 ```
 
-With the “merge” helper, we can define the “branch” operation:
+*Lemma*: $"Force"("merge"(T_1, T_2), B) = "Force"(T_1, B) + "Force"(T_2, B) forall B in T_1, T_2$
+
+With the “merge” helper, we can define the “branch” operation.
+Note that `top_cell` here isn't really a free parameter; if the tree is
+$"Orderly"(N)$, then we must have $"top_cell"=N$.
 
 ```python
 # Listing 10: branch operation on orderly trees
 # branch: Orderly(N) -> list(Orderly(N-1))
 def branch(
   o: SumNode,
-  top_cell: int,
+  N: int,
   board_class: list[str],
 ) -> list[SumNode]:
   top_choice = find(
-    o.children, lambda c: c.cell == top_cell
+    o.children, lambda c: c.cell == N
   )
   if not top_choice:
     # cell is irrelevant; o is Orderly(N-1)
-    return [o for _ in board_class[top_cell]]
+    return [o for _ in board_class[N]]
 
   other_choices = [
-    c for c in o.children if c.cell != top_cell
+    c for c in o.children if c.cell != N
   ]
   skip_tree = SumNode(
     children=other_choices, points=o.points
@@ -1297,12 +1310,10 @@ def branch(
       top_choice.children[letter], skip_tree
     )  # both are Orderly(N-1)
     if top_choice.children.get(letter)
-    else skip_tree  # no words use this letter on the top choice cell
-    for letter in board_class[top_cell]
+    else skip_tree  # dead letter on cell N.
+    for letter in board_class[N]
   ]
 ```
-
-- Lemma: Force(merge(T1, T2), B) = Force(T1, B) + Force(T2, B) B T1 T2
 
 The `branch` function splits the tree into two parts: one that includes
 the words that go through the “top” cell (`top_choice`) and another
@@ -1325,13 +1336,14 @@ took 4.0s, roughly a 60x difference.
 A few observations:
 
 - The `merge` operations perform a deep merge.
-- In practice we can update `bound` on all nodes as we merge them.
-- The bounds on the subtrees we get back from `branch` are exactly the
-  same as what you'd get by building orderly trees for these smaller
-  board classes directly. But the merge operations are considerably
-  faster. TODO: this isn't true, but why?
+- In practice we can update a `bound` property on all nodes as we merge them,
+  so that calculating the bound is instant.
 - The `merge` operation (and `branch`) are likely to reduce the bound
   because they synchronize choices across previously distinct subtrees.
+- The subtrees we get back from `branch` aren't exactly the same as
+  what you'd get by building orderly trees for the smaller
+  board classes directly. This is because `branch` effectively removes
+  a cell from the board, rather than replacing it with a one-letter choice.
 
 Here are the results of the first `branch` call on the Orderly Tree for
 the 5 million board 3x3 board class from before.
@@ -1357,18 +1369,20 @@ the 5 million board 3x3 board class from before.
 === OrderlyBound
 <orderlybound>
 The `branch` operation on its own is sufficient to implement Branch and
-Bound with Orderly Trees. Merging allocates additional nodes, however,
-and we may wish to save RAM by not doing that all the way to each
-candidate board.
+Bound with Orderly Trees. Eventually we'll merge all the way down to a
+single `SumNode`, which represents a candidate board.
+This allocates additional nodes, however, and we may wish to save RAM
+by not doing that all the way to single boards.
 
 Instead, we can define an alternative algorithm, `OrderlyBound`, which
 refines the bound on a tree by traversing it, rather than merging
-subtrees. For each cell, we'll maintain a stack of pointers to
-ChoiceNodes for that cell. To “branch,” we'll pop off the ChoiceNodes
-for the next cell and, for each choice, push all the next child cells
-onto their stacks. We can maintain a bound as we do this. If the bound
+subtrees. We'll maintain a stack of pointers to
+`ChoiceNodes`. To “branch,” we'll pop off the ChoiceNodes
+for the next cell and, for each choice, push all the next child cells.
+We can maintain a bound as we do this. If the bound
 ever drops below `S_high`, we can abandon this search path.
 
+#block(
 ```python
 # Listing 11: orderly_bound
 # Assumes N >= 1
@@ -1392,7 +1406,7 @@ def orderly_bound(
       record_candidate_board(choices, b)
       return
 
-    # Try each letter on the next cell in order.
+    # Try each letter on the next cell.
     cell = CELL_ORDER[idx]
     for letter in board_class[cell]:
       next_nodes = [
@@ -1417,77 +1431,80 @@ def orderly_bound(
       )
 
   step(root.points, 0, [], root.children)
+```,
+breakable: false
+)
+
+*Lemma*: Each `step` call preserves the invariant that
+$ "points" + sum_(n in "stack") "Force"(n, B) = "Multi"(B) $ for all boards
+$B$ compatible with `choices`.
+
+The proof is by induction.
+
+Base case: The initial call to `step` has the root points, plus all the root's
+  children. This matches the definition of $"Force"$ for a `SumNode`.
+
+Inductive case: From the inductive hypothesis, for each board $B$, the call to `step` has
+  $ "points" + sum_(n in "stack") "Force"(n, B) = "Multi"(B) $
+
+For each next choice of letter, we replace each node from the stacks
+with its points and compatible children:
+
+```
+# stack: list[ChoiceNode]
+# letter: char
+next_points = points + sum(n.child[letter].points for n in stacks)
+next_stacks = [child for n in stacks for child in n.child[letter].children]
 ```
 
-Lemma: Each `step` call preserves the invariant that
-`points + sum(Force(n, B) for n in stack) == Multi(B)` for all boards
-`B` compatible with `choices`.
+Then:
 
-Proof by induction:
+// TODO: This is a mess
 
-- Base case:
-  - The initial call to `step` has the root points, plus all the root's
-  children.
-  - This matches the definition of `Force` for a `SumNode`.
-- Inductive case:
-  - For each board `B`, the call to `step` has
-  `points + sum(Force(n, B) for n in stacks) == Multi(B)`.
-  - For each next choice of letter, we replace each node from the stacks
-  with its points and compatible children:
+#place(
+  auto,
+  scope: "parent",
+  float: true,
+  $ &"next_points" + sum_(n in "next_stacks")"Force"(n, B) \
+&= "next_points" +
+sum_(n in "stacks") sum_("child" in n."child"["letter"]."children")
+  "Force"("child", B) \
+&= "points" +
+sum_(n in "stacks") n."child"["letter"]."points" +
+sum_(n in "stacks") sum_("child" in n."child"["letter"]."children")
+  "Force"("child", B) \
+&= "points" + sum_(n in "stacks")
+  n."child"["letter"]."points" +
+    sum_("child" in n."child"["letter"]."children") "Force"("child", B) \
+&= "points" + sum_(n in "stacks") "Force"(n."child"["letter"], B) \
+&= "points" + sum_(n in "stacks") "Force"(n, B) #h(1cm) "definition of Force for ChoiceNode" \
+&= "Multi"(B)
+$,
+)
 
-  ```
-  # stack: list[ChoiceNode]
-  # letter: char
-  next_points = points + sum(n.child[letter].points for n in stacks)
-  next_stacks = [child for n in stacks for child in n.child[letter].children]
 
-  next_points + sum(Force(n, B) for n in next_stacks)
-  = next_points +
-  sum(
-    Force(child, B)
-    for n in stacks
-    for child in n.child[letter].children]
-  )
-  = points +
-  sum(n.child[letter].points for n in stacks) +
-  sum(
-    Force(child, B)
-    for n in stacks
-    for child in n.child[letter].children]
-  )
-  = points + sum(
-    (n.child[letter].points +
-     sum(Force(child, B) for child in n.child[letter].children))
-    for n in stacks
-  )
-  = points + sum(Force(n.child[letter], B) for n in stacks)
-  = points + sum(Force(n, B) for n in stacks)  # defn of Force for ChoiceNode
-  = Multi(B)
-  ```
-- Theorem: `OrderlyBound` finds all the boards `B` in a tree with
-  `Multi(B) >= S_high`.
+*Theorem*: `OrderlyBound` finds all the boards $B$ in a tree with
+  $"Multi"(B) >= S_"high"$.
 
 Proof: The lemma established an invariant for the recursive calls to
 `step`. It suffices to check the check the two cases where the function
 returns early.
 
-If `bound < S_high`, then we have:
+If $b < S_"high"$, then we have:
 
-```
-bound = points + sum(Bound(c) for stack in stacks for c in stack) < S_high
-=> points + sum(Force(c, B) for stack in stacks for c in stack) < S_high \forall B
-=> Multi(B) < s_high \forall B
-```
+$
+& b = "points" + sum_(c in "stack") "Bound"(c) < S_"high" \
+&=> "points" + sum_(c in "stack") "Force"(c, B) < S_"high" forall B \
+&=> "Multi"(B) < S_"high" forall B
+$
 
 and therefore there are no high-scoring boards.
 
-If `idx==N`, then the stacks are empty and we have a single board:
+If `idx==N`, then the stacks are empty and we have a single board with
 
-```
-bound = points + sum(Bound(c) for stack in stacks for c in stack)
-    = points
-    = Multi(B) >= S_high
-```
+$ b &= "points" + sum_(c in "stack") "Bound"(c) \
+    &= "points" \
+    &= "Multi"(B) >= S_"high" $
 
 So this is a candidate high-scoring board.
 
@@ -1502,24 +1519,26 @@ Observations:
   `stack` something like 2^(\# of skipped nodes).
 - The `branch` operation (tree merging) mitigates this exponential by
   reducing the number of skips.
+- We used a single stack here, but in practice it's much more efficient to
+  keep a separate stack for each cell.
 
 The `branch` and `OrderlyBound` operations work well together. In
 practice, we build the tree for a board class, then call `branch` some
 number of times before switching over to `OrderlyBound`. The optimal
 switchover point is highly variable, but switching when
-`root.bound <= 1.5*S_high` seems to work well in practice.
+$"n"."bound" <= 1.5 S_"high"$ seems to work well in practice.
 
-For the 5M board 3x3 class, calling `orderly_bound` with `S_high=500`
-results in 55,483 calls to `step` and a maximum stack size of 167. The
-most times a single node is added to the stack is 1,289.
+// For the 5M board 3x3 class, calling `orderly_bound` with `S_high=500`
+// results in 55,483 calls to `step` and a maximum stack size of 167. The
+// most times a single node is added to the stack is 1,289.
 
 TODO: get some stats about how fast OrderlyBound is vs.~OrderlyMerge and
 how much memory they use.
 
 === De-duplicated Multiboggle
 <de-duplicated-multiboggle>
-`OrderlyBound` will report any board with `Multi(B) >= S_high`. For each
-of these, we need to check whether `Score(B) >= S_high` as well. As we
+`OrderlyBound` will report any board with $"Multi"(B) >= S_"high"$. For each
+of these, we need to check whether $"Score"(B) >= S_"high"$ as well. As we
 saw earlier, these two scores are typically close, but there are some
 pathological cases where they diverge. Since `branch` and `OrderlyBound`
 converge on the Multiboggle score, they'll bog down on the board classes
@@ -1529,29 +1548,41 @@ score many millions of Boggle boards to filter them out.
 We can improve the situation slightly. Consider the BEE/FEE/BEEF board
 from earlier:
 
-```
-E B E
-E F E
-```
+#figure(
+  align(center)[#table(
+  columns: 3,
+  stroke: 0.5pt,
+  align: (auto,auto,auto),
+  [E], [B], [E],
+  [E], [F], [E],
+  )]
+  , kind: table
+  )
 
 The max bound counted each of these words four times. If we consider
 this in the context of a board class, however:
 
-```
-{E,X} B {E,X}
-{E,X} F {E,X}
-```
+#figure(
+  align(center)[#table(
+  columns: 3,
+  stroke: 0.5pt,
+  align: (auto,auto,auto),
+  [{E,X}], [B], [{E,X}],
+  [{E,X}], [F], [{E,X}],
+  )]
+  , kind: table
+  )
 
 we can see that “BEE” can be found on the left only when both cells are
 E, not X, and similarly on the right. But when both of the left cells
 are E, we know that these paths to BEE, FEE and BEEF will only count
 once towards the true Boggle score. Both of the left paths to BEE:
 
-```
-E-B E  E B E
-|    |/
-E F E  E F E
-```
+#figure(```
+E-B E   E B E
+|       |/
+E F E   E F E
+```)
 
 correspond to the exact same SumNode in the orderly tree. So if we add
 this word's points to that node once, rather than twice, we don't risk
@@ -1561,10 +1592,16 @@ We do still need to add both the left and the right versions of BEE, FEE
 and BEEF. If we only added the left versions, then we'd miss the points
 for this board in the board class:
 
-```
-X B E
-X F E
-```
+#figure(
+  align(center)[#table(
+  columns: 3,
+  stroke: 0.5pt,
+  align: (auto,auto,auto),
+  [X], [B], [E],
+  [X], [F], [E],
+  )]
+  , kind: table
+  )
 
 And we'd no longer have a valid upper bound.
 
@@ -1576,19 +1613,21 @@ So for this board we have:
 - `Multi(B)` = 12
 - `DeMulti(B)` = 6
 
-Clearly `Score(B) <= DeMulti(B) <= Multi(B)` for all boards B. For
-boards without repeated letters, `Score(B) = Multi(B)`, and so the same
-holds for `DeMulti(B)`.
+Clearly $"Score"(B) <= "DeMulti"(B) <= "Multi"(B)$ for all boards B. For
+boards without repeated letters, $"Score"(B) = "Multi"(B)$, and so the same
+holds for $"DeMulti"(B)$.
 
 We can filter out duplicate words in `BuildTree`. All the same
-invariants now hold, only we converge to `DeMulti(B)` rather than
-`Multi(B)`.
+invariants now hold, only we converge to $"DeMulti"(B)$ rather than
+$"Multi"(B)$.
 
 Here are some examples of the effect this deduping has on the root bound
 for Orderly Trees:
 
 - eeesrvrreeesrsrs: 21953 → 13253 (true score is 189)
 - 4x4 board class containing perslatgsineters: 53037 → 36881
+
+// TODO: repeat table from above?
 
 Since the bound for this board class is so much lower, we expect the
 Branch and Bound procedure to process it much more quickly. In practice,
@@ -1599,20 +1638,17 @@ greatest time to process.
 === Final Branch and Bound Algorithm
 <final-branch-and-bound-algorithm>
 Here's the final Branch and Bound algorithm for finding Boggle boards
-`B` with `Score(B) >= S_high`:
+$B$ with $"Score"(B) >= S_"high"$:
 
 + Enumerate all possible board classes, filtering for symmetry.
-+ For each board class `C`, build an Orderly Tree with deduping.
++ For each board class $C$, build an Orderly Tree with deduping.
 + Repeatedly call `branch` until either:
-  + `node.bound < S_high` in which case this board class can be
-  eliminated
-  + `node.bound <= 1.5 * S_high` in which case we switch to
-  `OrderlyBound`. This will output a list of boards `B \in C` such
-  that `DeMulti(B) >= S_high`.
-+ For each such board `B`, check whether `Score(B) >= S_high`.
+  + $"Bound"("node") < S_"high"$ in which case this board class can be eliminated.
+  + $"Bound"("node") <= 1.5 S_"high"$ in which case we switch to `OrderlyBound`. This will output a list of boards $B in C$ such that $"DeMulti"(B) >= S_"high"$.
++ For each such board $B$, check whether $"Score"(B) >= S_"high"$.
 
-This will produce a list of all boards `B` (up to symmetry) with
-`Score(B) >= S_high`. If two congruent boards fall in the same board
+This will produce a list of all boards $B$ (up to symmetry) with
+$"Score"(B) >= S_"high"$. If two congruent boards fall in the same board
 class, it will produce both of them.
 
 == Results
@@ -1645,9 +1681,9 @@ Two 4x4 runs were completed, one with the ENABLE2K wordlist and one with
 the NASPA2023 word list. The former was completed before the “deduped
 Multiboggle” optimization, and its runtime was longer.
 
-- ENABLE2K: Found 32 boards with Score\>=3500 in 23,000 CPU hours\*
-- OSPD5: Found 46 boards with Score\>=3600 in 7,500 CPU hours
-- NASPA2023: Found 40 boards with Score\>=3700 in 9,000 CPU hours.
+- *ENABLE2K*: Found 32 boards with Score$>=$3500 in 23,000 CPU hours\*
+- *OSPD5*: Found 46 boards with Score$>=$3600 in 7,500 CPU hours
+- *NASPA2023*: Found 40 boards with Score$>=$3700 in 9,000 CPU hours.
 
 Compared to exhaustive search, this is roughly a billion times faster.
 Assuming \$0.05/core/hr, this is around \$400 of compute.
@@ -1655,25 +1691,19 @@ Assuming \$0.05/core/hr, this is around \$400 of compute.
 As with 3x3 and 4x4 Boggle, the top boards can all be found via
 hillclimbing.
 
-Here are the top five boards for each wordlist (the parenthesized number
-is the rank on ENABLE2K):
+Here are the top five boards for ENABLE2K and NASPA2023:
 
 #figure(
   align(center)[#table(
-  columns: (25%, 25%, 25%, 25%),
-  align: (auto,auto,auto,auto,),
-  table.header([], [#strong[ENABLE2K];], [#strong[OSPD5];], [#strong[NASPA2023];],),
+  columns: (auto, 1fr, 1fr),
+  align: (auto,auto,auto),
+  table.header([], [#strong[ENABLE2K];], [#strong[NASPA2023];],),
   table.hline(),
-  [1], [perslatgsineters: 3625], [segsrntreiaeslps: 3827
-  (2)], [perslatgsineters: 3923 (1)],
-  [2], [segsrntreiaeslps: 3603], [aresstapenildres: 3763
-  (4)], [segsrntreiaeslps: 3861 (2)],
-  [3], [gepsnaletireseds: 3593], [derslinepatgsers: 3754
-  (11)], [bestlatepirsseng: 3841 (27)],
-  [4], [aresstapenildres: 3591], [perslatgsineters: 3736
-  (1)], [dclpeiaerntrsegs: 3835 (9)],
-  [5], [cinslateperidsng: 3591], [sdesrtnreaiespls: 3732
-  (6)], [aresstapenildres: 3826 (4)],
+  [1], [perslatgsineters: 3625], [perslatgsineters: 3923],
+  [2], [segsrntreiaeslps: 3603], [segsrntreiaeslps: 3861],
+  [3], [gepsnaletireseds: 3593], [bestlatepirsseng: 3841],
+  [4], [aresstapenildres: 3591], [dclpeiaerntrsegs: 3835],
+  [5], [cinslateperidsng: 3591], [aresstapenildres: 3826],
   )]
   , kind: table
   )
@@ -1687,7 +1717,7 @@ for OSPD5 is the \#2 board for ENABLE2K.
 === Extension to maximizing word count
 <extension-to-maximizing-word-count>
 Instead of seeking the highest-scoring board, we might instead be
-interested in finding the board with the most distinct words on it. This
+interested in finding the board with the most words on it. This
 is a straightforward modification of the problem. We simply change the
 `SCORE` array to contain all 1s. Then all the tools developed in this
 paper work exactly as before.
@@ -1699,20 +1729,23 @@ the wordiest 4x4 board, we'd expect the hillclimbing winner to be the
 global optimum here as well.
 
 These boards have significant overlap with the highest-scoring boards.
-The \#1 wordiest board for ENABLE2K is gesorntreaieslps with 1,158 words
-and 3,569 points. This is also the \#8 highest-scoring board.
+The \#1 wordiest board for ENABLE2K is serglanepitssero with 1,158 words
+and 3,569 points. This is also the \#8 highest-scoring board. Its middle
+two columns are identical to those of the highest-scoring board.
 
 #figure(
   align(center)[#table(
   columns: 4,
   stroke: 0.5pt,
   align: (auto,auto,auto,auto,),
-  [G], [E], [S], [O],
-  [R], [N], [T], [R],
-  [E], [A], [I], [E],
-  [S], [L], [P], [S],
+  [S], [E], [R], [G],
+  [L], [A], [N], [E],
+  [P], [I], [T], [S],
+  [S], [E], [R], [O],
   )]
   , kind: table
+  , caption: [The "wordiest" known board for ENABLE2K with 1,158 words and 3,569 points.]
+  , numbering: none
   )
 
 === Variation: Powers of Two Boggle
@@ -1737,18 +1770,20 @@ come from the word “prequalifications.”
   columns: 4,
   stroke: 0.5pt,
   align: (auto,auto,auto,auto,),
-  [R], [P], [Q], [A],
+  [R], [P], [Qu], [A],
   [S], [E], [L], [I],
   [N], [I], [F], [C],
   [O], [I], [T], [A],
   )]
   , kind: table
+  , numbering: none
+  , caption: [The best known board for "powers of two" Boggle, containing the 16,384-point word "prequalifications."]
   )
 
 This failure gives us some insights into why hillclimbing is effective
 at finding the highest-scoring and wordiest boards. Those scores both
 produce a smooth fitness landscape, where single character variations on
-a board produce relatively small changes in its score. This means that
+a board produce relatively small changes to its score. This means that
 the optimal boards are surrounded by other high-scoring boards, and hill
 climbing is likely to reach the summit if it gets anywhere near it.
 There's nowhere for a great board to “hide,” surrounded by mediocre
@@ -1787,7 +1822,7 @@ different approach is required.
   [3x4], [6h],
   [4x4], [7500h],
   [4x5], [\~10,000 years],
-  [5x5], [\~10M years],
+  [5x5], [\~1B years],
   )]
   , kind: table
   )
@@ -1796,7 +1831,7 @@ Here are a few alternative approaches that would be interesting to
 explore:
 
 - #strong[SMT/ILP solvers] The NP-Hard proof showed that Boggle
-  maximization maps onto well-known problems. These problems are often
+  maximization maps onto well-known SAT problems. These problems are often
   tackled using ILP Solvers like Z3, OR-Tools or Gurobi. A preliminary
   investigation didn't show much promise here, but this is a large field
   and there may be some better way to frame the problem.
@@ -1825,10 +1860,12 @@ explore:
 
 == Conclusions
 <conclusions>
-- Hillclimbing works well for Boggle. This is likely because the score
-  function is relatively smooth. High-scoring boards are surrounded by
-  other high-scoring boards.
-- Branch and Bound can be greatly accelerated by using a tailor-made
-  tree structure and algorithms.
-- 4x4 Boggle Maximization has been solved, but 5x5 maximization remains
-  well out of reach.
+
+Using Branch and Bound, Orderly Trees, and some tailor-made algorithms,
+we're able to achieve a factor of a billion speedup over brute-force
+search. This is enough to prove that the highest-scoring board found via
+hillclimbing is, in fact, the global optimum. It's likely that hillclimbing
+is so effective because the score function produces a relatively smooth
+fitness landscape. The approach taken in this paper requires solving an
+NP-Hard problem, and it will not scale well to 5x5 or 6x6 Boggle maximization,
+which remain well out of reach.

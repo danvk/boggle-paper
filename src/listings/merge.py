@@ -73,18 +73,18 @@ def merge_choice(
 # branch: Orderly(N) -> list(Orderly(N-1))
 def branch(
   o: SumNode,
-  top_cell: int,
+  N: int,
   board_class: list[str],
 ) -> list[SumNode]:
   top_choice = find(
-    o.children, lambda c: c.cell == top_cell
+    o.children, lambda c: c.cell == N
   )
   if not top_choice:
     # cell is irrelevant; o is Orderly(N-1)
-    return [o for _ in board_class[top_cell]]
+    return [o for _ in board_class[N]]
 
   other_choices = [
-    c for c in o.children if c.cell != top_cell
+    c for c in o.children if c.cell != N
   ]
   skip_tree = SumNode(
     children=other_choices, points=o.points
@@ -94,8 +94,8 @@ def branch(
       top_choice.children[letter], skip_tree
     )  # both are Orderly(N-1)
     if top_choice.children.get(letter)
-    else skip_tree  # no words use this letter on the top choice cell
-    for letter in board_class[top_cell]
+    else skip_tree  # dead letter on cell N.
+    for letter in board_class[N]
   ]
 
 
