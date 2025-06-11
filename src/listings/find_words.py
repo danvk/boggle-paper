@@ -27,10 +27,7 @@ def score(bd: str, trie: Trie) -> int:
     used[idx] = False
     return score
 
-  score = 0
-  for i in range(m * n):
-    score += step(i, trie)
-  return score
+  return sum(step(i, trie) for i in range(m * n))
 
 
 # /Listing

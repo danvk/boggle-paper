@@ -16,5 +16,5 @@ dev = [
 ]
 
 [tool.ruff]
-line-length = 47
+line-length = 50
 indent-width = 2

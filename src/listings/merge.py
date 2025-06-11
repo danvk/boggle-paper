@@ -45,10 +45,7 @@ def merge(a: SumNode, b: SumNode) -> SumNode:
     by_cell[bc.cell] = (
       merge_choice(ac, bc) if ac else bc
     )
-  ch = sorted(
-    by_cell.values(),
-    key=lambda c: -ORDER[c.cell],
-  )
+  ch = [*by_cell.values()]
   return SumNode(
     points=a.points + b.points, children=ch
   )
@@ -116,9 +113,7 @@ def main():
   split_order = SPLIT_ORDER[(m, n)]
   cell = split_order[0]
   subtrees = branch(tree, cell, board_class)
-  assert len(subtrees) == len(
-    board_class[cell]
-  )
+  assert len(subtrees) == len(board_class[cell])
   for letter, subtree in zip(
     board_class[cell], subtrees
   ):

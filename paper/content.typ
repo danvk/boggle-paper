@@ -7,9 +7,11 @@ Boggle is a word search game invented in 1972 by Allan D. Turoff and
 currently sold by Hasbro. Competitors shake up 16 dice to form a 4x4
 grid of letters. The goal is to find as many words as possible in three
 minutes. Letters can be connected up, down, left, right and diagonally,
-and words need not be found in a straight line. The same die cannot be
+and words need not be arranged in a straight line. The same die cannot be
 used twice in a word. Longer words count for more points (3/4 letters=1
 point, 5=2, 6=3, 7=5, 8+=11 points).
+
+// TODO: add a visual of finding a word
 
 Finding all the words on a Boggle board has become a classic computer
 programming problem. It is often assigned in classes, used as an
@@ -22,7 +24,7 @@ definitive statements about whether these are #emph[the] highest-scoring
 boards.
 
 This paper takes a different approach. By using Branch and Bound, a data
-structure and algorithms tailor-made for Boggle, and a large amount of
+structure tailor-made for Boggle, and a large amount of
 compute, we're able to establish for the first time that the best Boggle
 boards found via hillclimbing are, in fact, the global optima.
 
@@ -39,12 +41,14 @@ boards found via hillclimbing are, in fact, the global optima.
 The words that can be found on a Boggle board are determined by the
 letters on the board and by the choice of dictionary. In this paper,
 we'll use the ENABLE2K word list, which was developed by Alan Beale in
-1997 and 2000. This word list contains 173,528 entries.
+1997 and 2000. This word list contains 173,528 entries. Unlike wordlist
+designed for Scrabble, in which it's impossible to play words longer than
+15 letters, ENABLE2K has no limit on word length.
 
 We adopt the following terminology and conventions:
 
 - $B$ refers to a Boggle board. To refer to a specific Boggle board, we
-  write out the letters of the board in column-major order. (This
+  write out the letters of the board in row-major order. (This
   distinction is only important for non-square dimensions such as 2x3
   and 3x4 Boggle, which lack reflectional symmetry.)
 // TODO: this board is not shown anywhere
@@ -55,20 +59,28 @@ We adopt the following terminology and conventions:
   use lowercase. No meaningful distinction is drawn between uppercase
   and lowercase in this paper.
 // TODO: this is not shown anywhere
-- The cells on an $M$x$N$ board are numbered $0...M N-1$ in column-major
+- The cells on an $M$x$N$ board are numbered $0...M N-1$ in row-major
   order, as shown in Figure N. We refer to the letter on cell $i$ of
   board $B$ as $B_i$.
 - $"Words"(B)$ is the set of all words that can be found on the board $B$.
 - $"Score"(B)$ is the sum of the point value of these words,
-  $sum_(w in "Words"(B)) "SCORES"["Len"(w)]$. We refer to this as the
+  $ "Score"(B) = sum_(w in "Words"(B)) "SCORES"["Len"(w)] $ We refer to this as the
   score of the board.
+
+#boggle.board(
+  [0], [1], [2], [3],
+  [4], [5], [6], [7],
+  [8], [9], [10], [11],
+  [12], [13], [14], [15],
+  caption: [Numbering of cells on a 4x4 board.]
+)
 
 == Heuristics to find high-scoring boards
 <heuristics-to-find-high-scoring-boards>
 Finding all the words on a Boggle board is a popular programming puzzle.
 This is done by performing a depth-first search over the board's
 adjacency graph starting at each cell. The key to making this efficient
-is to prune out prefixes such as “bnj” that don't begin any words in the
+is to prune out prefixes such as “bn” that don't begin any words in the
 dictionary. This is typically done using a Trie (Prefix Tree) data
 structure.
 
@@ -76,7 +88,7 @@ structure.
 
 Nodes in the Trie are marked as we find words to avoid double-counting.
 With some care, it is possible to find the score of individual boards
-extremely rapidly on modern hardware. For example, the author's laptop
+extremely rapidly on modern hardware. For example, the author's M2 MacBook
 is able to score random 4x4 Boggle boards at a rate of around 200,000
 boards per second.
 
@@ -89,10 +101,10 @@ high-scoring boards, as shown in Listing 1.
 ```
 # Listing 1: Hillclimbing Algorithm
 N = 500  # pool size
-Pool <- N random Boggle Boards
+Pool = N random Boggle Boards
 Repeat until convergence:
-  Neighborhood <- Pool + Boards within edit distance 1 of a board in Pool
-  Pool <- N highest-scoring boards in Neighborhood
+  Next = Pool + Boards within edit distance 1
+  Pool = N highest-scoring boards in Next
 ```
 
 We take an “edit” to mean changing one letter or swapping two letters.
@@ -112,13 +124,13 @@ all but the smallest sizes:
 
 #figure(
   align(center)[#table(
-  columns: (25%, 25%, 25%, 25%),
+  columns: (10%,auto,auto,auto),
   align: (auto,auto,auto,auto,),
-  table.header([#strong[Dims];], [#strong[Boards];], [#strong[Rate];], [#strong[Time];],),
+  table.header([#strong[Dims];], [#strong[Num Boards];], [#strong[Rate ];], [#strong[Time];],),
   table.hline(),
-  [3x3], [26^9/8 $approx$ 6.8e11], [600k bd/s], [\~12 days],
-  [3x4], [26^12/4 $approx$ 2.4e16], [400k bd/s], [\~2000 years],
-  [4x4], [26^16/8 $approx$ 5.5e21], [200k bd/s], [\~900M years],
+  [3x3], [$26^9 \/8 approx 6.8"e"11$], [600k bd/s], [\~12 days],
+  [3x4], [$26^12 \/4 approx 2.4"e"16$], [400k bd/s], [\~2000 years],
+  [4x4], [$26^16 \/8 approx 5.5"e"21$], [200k bd/s], [\~900M years],
   )]
   , kind: table
   )
@@ -130,7 +142,8 @@ which is NP-Complete. A greedy approach works well for this small
 problem, however, and we can estimate that approximately 1 in 12
 combinations of letters can be rolled. While this reduces the search
 space, it's not enough to make exhaustive search feasible, and this will
-not prove to be a useful constraint.
+not prove to be a useful constraint. In practice, all high-scoring boards
+can be rolled in many ways with the Boggle dice.
 
 Two observations suggest a path towards a solution:
 
@@ -138,9 +151,9 @@ Two observations suggest a path towards a solution:
   of a board and that of its neighbors involves large amounts of
   duplicated work.
 + Most boards have scores that are significantly lower than the best
-  one. The average score of a random board is about 42, nearly 100x less
-  than 3625. (The average score of a board rolled with Boggle dice is
-  closer to 120.)
+  one. The average score of a random board is about 42 points, nearly 100x less
+  than 3,625. (The average score of a board rolled with Boggle dice is
+  closer to 120 points.)
 
 The first observation suggests that we should group boards together to
 reduce repeated work. The second indicates that we have considerable
@@ -170,16 +183,18 @@ Queue <- {Universal Set of MxN Boggle Boards}
 while Queue is non-empty:
   S <- Pop(Queue)
   if |S| == 1:
-  S is a candidate solution; score its lone board to check
-  else if bound(S) < S_high:
-  S cannot contain a high-scoring board; it can be dropped.
+    S is a candidate solution;
+    Calculate Score(S) to confirm
+  else if Bound(S) < S_high:
+    S cannot contain a high-scoring board.
   else:
-  for S_i in branch(S):
-    Queue <- S_i
+    for S_i in branch(S):
+      Queue <- S_i
 ```
 
 The appeal of this approach is that, when $"bound"(S)$ is low, we can
 discard the entire set $S$ without having to evaluate every board in it.
+
 Now we need to define the branch and bound operations.
 
 === Board classes and the branch operation
@@ -188,7 +203,7 @@ Rather than allowing arbitrary sets of Boggle boards, we restrict
 ourselves to “board classes.” These require each cell of a board in the
 set to come from a particular set of letters:
 
-$ C(L_1, L_2, ..., L_(m dot n)) = { B | B_i in L_i forall i } $
+$ C(L_1, L_2, ..., L_(m n)) = { B | B_i in L_i forall i } $
 
 For example, here's a 3x3 board class where each cell can be one of two
 letters:
@@ -202,6 +217,8 @@ letters:
 
 This board class contains $2^9$ = 512 possible boards. Here are a few of
 them:
+
+// TODO: can these all fit on one line?
 
 #boggle.board(
   [A], [G], [M],
@@ -251,14 +268,14 @@ search:
   , kind: table
   )
 
-Using three buckets with 4x4 Boggle, for example, we have only $3^16 / 8
-approx 5.4*10^6$ board classes to consider, a dramatic reduction from the
-$5.5*10^21$ individual boards. Of course, this will be in vain if operations
-on board classes are proportionally slower. Fortunately, this will not
+Using three buckets with 4x4 Boggle, for example, we have only $3^16 \/ 8
+approx 5.4 times 10^6$ board classes to consider, a dramatic reduction from the
+$5.5 times 10^21$ individual boards. This will be in vain if operations
+on board classes are proportionally slower, but fortunately, this will not
 prove to be the case.
 
 To “branch” from a board class, we split one of its cells into the
-individual possibilities. For example, starting with this board class
+possible letters. For example, starting with this board class
 containing 5,062,500 boards:
 
 #boggle.board(
@@ -314,8 +331,8 @@ each possible letter on each cell:
 Clearly we have $ "sum_bound"(C) >= "Score"(B) forall B in C $ because every
 word on every possible board contributes to the bound.
 
-A useful property of this bound is that, if `C = {B}`, then
-`sum_bound(C) = Score(B)`, that is to say, it
+A useful property of this bound is that, if $C = {B}$, then
+$"sum_bound"(C) = "Score"(B)$, that is to say, it
 converges on the true Boggle score for single-board sets.
 
 Unfortunately, this bound is imprecise because it doesn't take into
@@ -327,13 +344,14 @@ consider this 2x2 board class containing two individual boards:
   [.], [R],
 )
 
-There are two words here, “far” and “fur.” These each count for 1 point,
+Ignoring "arf," there are two words here, “far” and “fur.”
+These each count for 1 point,
 so the sum bound of the board class is 2. No individual board can
 contain both of these words, however, since the A and the U are mutually
 exclusive, so this is an overestimate.
 
 This proves problematic for large board classes. For example, the
-sum\_bound of the 5,062,500 board class above is 109,524 points, but the
+sum\_bound of the 5,062,500 board class in Table N is 109,524 points, but the
 best board in that class only scores 545 points. To get a better bound,
 we need to take into account that choices on cells are exclusive.
 
@@ -367,7 +385,7 @@ class and each of its five splits:
 #figure(
   align(center)[#table(
   columns: 4,
-  align: (auto,auto,auto,auto,),
+  align: (bottom,bottom,bottom,bottom),
   table.header([#strong[Center Cell];], [#strong[Sum
     Bound];], [#strong[Max Bound];], [#strong[True Max];],),
   table.hline(),
@@ -542,8 +560,10 @@ maintains this invariant.
 First, we define the “Force” operation on a tree:
 
 ```
-Force(n: SumNode, B) = n.points + sum(Force(c, B) for c in n.children)
-Force(n: ChoiceNode, B) = Force(n.choices[B_{n.cell}], B) or 0
+Force(n: SumNode, B)
+= n.points + sum(Force(c, B) for c in n.children)
+Force(n: ChoiceNode, B)
+= Force(n.choices[B_{n.cell}], B) or 0
 ```
 
 Intuitively, this “forces” each cell to match the board `B`.
@@ -594,8 +614,12 @@ $ "Score"(B) &<= "Multi"(B) \
 &= "Force"(T, B) \
 &<= "Bound"(T) #h(0.5em) forall B in C $
 
+// TODO: Score -> S, Force -> F, Multi -> M?
+
 So if we can show that $"Force"(T, B) = "Multi"(B)$ for all boards in a
 board class, then $"Bound"(T)$ is a valid upper bound for $"Score"(C)$.
+
+// TODO is Score(C) defined anywhere?
 
 For most boards, $"Multi"(B)$ is close to $"Score"(B)$. Since we have
 considerable “wiggle room” between the average score of a board (\~40
@@ -709,11 +733,11 @@ Path(n: SumNode) =
 
 Then we can reformulate `Force` as a sum across compatible paths:
 
+$ "Compat"(P, B) = "AND"_(n in P) (B_(n."cell") = n."letter"$)
 
-$ "Force"(T, B) = \ sum(
-  "node"."points"
-  forall "node" in T \
-  | "AND"_(n in "Path"("node"))(B_(n."cell") = n."letter")
+$ "Force"(T, B) = \ sum_(n in T) (
+  n."points"
+  | "Compat"("Path"(n), B)
 ) $
 
 The anagramming theorem is a natural consequence of `AND` being
@@ -735,6 +759,7 @@ cells appear closer to the root of the tree):
   [11], [15], [13], [10],
   [9], [14], [12], [8],
   [1], [6], [4], [0],
+  caption: [The canonical `ORDER` array.]
 )
 
 We can produce a tree using this ordering:
@@ -789,8 +814,9 @@ is more dramatic for larger board classes:
 By construction, no ChoiceNode $n$ in an Orderly Tree will have
 `ORDER[n.cell]` greater than any of its parents. So if a path begins
 14→6 in the tree, then it may only continue to cells 1 or 4, since those
-are lower numbers. (14→6→9 is a valid path, but it would be added to
-the tree as 14→9→6.) Intuitively, if cell $A$ has a child on cell $B$,
+are lower numbers for adjacent cells. (14→6→9 is a valid path, but it would be added to
+the tree as 14→9→6.) Intuitively, if a ChoiceNode with $"cell"=A$ has a child
+with a choice on cell $B$,
 then this represents all the paths through the board that skip cells
 between $A$ and $B$ in the canonical order.
 
@@ -804,13 +830,14 @@ Orderly(N) = SumNode with children:
          for i = 0 .. (N-1)
 
 OrderlyChoice(n: Int)
-Orderly(N) = ChoiceNode with Orderly(N) children
+OrderlyChoice(N) = ChoiceNode with cell=N
+                   and Orderly(N) children
 ```
 
 We can make a few more observations about Orderly Trees:
 
 - The Orderly Tree for a board class, and hence the “orderly bound,” is
-  dependent on the order of cells that we choose.
+  dependent on the canonical order that we choose for the cells.
 - The tree no longer bears any resemblance to a plausible DFS of the board.
 - We can no longer associate SumNodes with single words. For example,
   the “+3” node on the top right of the tree visualization includes the
@@ -825,20 +852,22 @@ With Orderly Trees defined, we're finally ready to perform operations on
 them. Our first goal will be to speed up the “branch” operation and
 calculation of the subsequent bound. This requires forcing a single cell
 in the board class to be each of its possible letters and constructing
-the resulting Orderly Tree.
+the resulting Orderly Trees.
 
 In practice, it makes the most sense to force the top choice in the
-tree, i.e.~the one with the first position in the canonical order. This
-is a “merge” operation on Orderly Trees, which is straightforward to
+tree, i.e. the one with the first position in the canonical order. This
+requires a “merge” operation on Orderly Trees, which is straightforward to
 implement as in Listing N.
 
 #code.from_src("/src/listings/merge.py")
 
 *Lemma*: $"Force"("merge"(T_1, T_2), B) = "Force"(T_1, B) + "Force"(T_2, B) forall B in T_1, T_2$
 
-With the “merge” helper, we can define the “branch” operation.
-Note that `top_cell` here isn't really a free parameter; if the tree is
-$"Orderly"(N)$, then we must have $"top_cell"=N$.
+No cells are destroyed by `merge`, and points are added when there's a collision.
+
+With the `merge` helper, we can define the “branch” operation.
+Note that `N` here isn't really a free parameter; if the tree is
+$"Orderly"(N)$, then we must use this value of $N$.
 
 #code.from_src("/src/listings/merge.py", start: "branch operation")
 
@@ -872,16 +901,18 @@ A few observations:
   board classes directly. This is because `branch` effectively removes
   a cell from the board, rather than replacing it with a one-letter choice.
 
+// TODO: show merge T I AE R tree?
+
 Here are the results of the first `branch` call on the Orderly Tree for
 the 5 million board 3x3 board class from before.
 
 #figure(
   align(center)[#table(
   columns: (20%, 20%, 20%, 20%, 20%),
-  align: (auto,auto,auto,auto,auto,),
+  align: (bottom,bottom + right,bottom+right,bottom+right,bottom+right,),
   table.header([#strong[Center
     Cell];], [#strong[Nodes];], [#strong[Bound];], [#strong[True
-    Max];], [#strong[max\_bound];],),
+    Max];], [#strong[max\_ bound];],),
   table.hline(),
   [aeiou], [333,492], [1,523], [545], [9,460],
   [a], [86,420], [1,198], [545], [6,120],
@@ -907,7 +938,7 @@ subtrees. We'll maintain a stack of pointers to
 `ChoiceNodes`. To “branch,” we'll pop off the ChoiceNodes
 for the next cell and, for each choice, push all the next child cells.
 We can maintain a bound as we do this. If the bound
-ever drops below `S_high`, we can abandon this search path.
+ever drops below $S_"high"$, we can abandon this search path.
 
 #code.from_src("/src/listings/orderly_bound.py")
 
@@ -946,21 +977,22 @@ Observations:
 
 - OrderlyBound performs a shallow merge.
 - OrderlyBound stores at most one pointer to each node in the tree, but
-  in practice many fewer.
+  in practice many fewer. For the 5M board 3x3 class, the maximum stack size is 167.
 - The `points` parameter to `step` is the Multiboggle score on the
   portion of the board that's been forced.
 - OrderlyBound has exponential backtracking behavior. We visit a node in
-  `stack` something like 2^(\# of skipped nodes).
+  `stack` something like 2^(\# of skipped nodes). For the 5M board 3x3 class, the most times a single node is visited is 1,289.
 - The `branch` operation (tree merging) mitigates this exponential by
   reducing the number of skips.
 - We used a single stack here, but in practice it's much more efficient to
-  keep a separate stack for each cell.
+  keep a separate stack for each cell and cache the sums.
 
 The `branch` and `OrderlyBound` operations work well together. In
 practice, we build the tree for a board class, then call `branch` some
 number of times before switching over to `OrderlyBound`. The optimal
 switchover point is highly variable, but switching when
-$"n"."bound" <= 1.5 S_"high"$ seems to work well in practice.
+$"n"."bound" <= 1.5 S_"high"$ or there are only four unmerged cells left
+seems to work well in practice.
 
 // For the 5M board 3x3 class, calling `orderly_bound` with `S_high=500`
 // results in 55,483 calls to `step` and a maximum stack size of 167. The
@@ -968,6 +1000,8 @@ $"n"."bound" <= 1.5 S_"high"$ seems to work well in practice.
 
 TODO: get some stats about how fast OrderlyBound is vs.~OrderlyMerge and
 how much memory they use.
+
+// TODO: move this section earlier
 
 === De-duplicated Multiboggle
 <de-duplicated-multiboggle>
@@ -1001,8 +1035,8 @@ are E, we know that these paths to BEE, FEE and BEEF will only count
 once towards the true Boggle score. Both of the left paths to BEE:
 
 #figure(```
-E-B E   E B E
-|       |/
+E←B E   E B E
+↓       ↑↙
 E F E   E F E
 ```)
 
@@ -1040,8 +1074,8 @@ $"Multi"(B)$.
 Here are some examples of the effect this deduping has on the root bound
 for Orderly Trees:
 
-- eeesrvrreeesrsrs: 21953 → 13253 (true score is 189)
-- 4x4 board class containing perslatgsineters: 53037 → 36881
+- eeesrvrreeesrsrs: 21,953 → 13,253 (true score is 189)
+- best 4x4 board class: 53,037 → 36,881 (max is 3,625)
 
 // TODO: repeat table from above?
 
@@ -1067,6 +1101,9 @@ This will produce a list of all boards $B$ (up to symmetry) with
 $"Score"(B) >= S_"high"$. If two congruent boards fall in the same board
 class, it will produce both of them.
 
+In practice, the individual board classes can be treated as independent
+tasks in a MapReduce.
+
 == Results
 <results>
 The Branch and Bound procedure based on Orderly Trees runs significantly
@@ -1079,8 +1116,8 @@ buckets instead of three reduces the runtime to just 70s. Compared to
 the 12 days it would have taken for exhaustive search, this represents a
 15,000x speedup.
 
-=== Complete results for 3x4
-<complete-results-for-3x4>
+=== Results for 3x4
+<results-for-3x4>
 Using two letter buckets in the four corners and three buckets for the
 other eight cells, the Branch and Bound procedure completed in 5h54m on
 a single core. This represents a 3,000,000x speedup compared to the
@@ -1091,18 +1128,21 @@ symmetry) that score 1,500 points or more. Each of these boards can also
 be found via the hillclimbing procedure, which gives us confidence that
 it is an effective way to find the global maximum.
 
-=== Result for one dictionary for 4x4
-<result-for-one-dictionary-for-4x4>
+=== Results for 4x4
+<result-for-4x4>
 Two 4x4 runs were completed, one with the ENABLE2K wordlist and one with
 the NASPA2023 word list. The former was completed before the “deduped
 Multiboggle” optimization, and its runtime was longer.
 
-- *ENABLE2K*: Found 32 boards with Score$>=$3500 in 23,000 CPU hours\*
+- *ENABLE2K*: Found 32 boards with Score$>=$3500 in 23,000 CPU hours
+  #footnote[This run did predated the deduped multiboggle optimization, so it ran considerably slower than the other runs.]
 - *OSPD5*: Found 46 boards with Score$>=$3600 in 7,500 CPU hours
 - *NASPA2023*: Found 40 boards with Score$>=$3700 in 9,000 CPU hours.
 
 Compared to exhaustive search, this is roughly a billion times faster.
 Assuming \$0.05/core/hr, this is around \$400 of compute.
+
+// TODO: this might be the place to give more details on the run, e.g. distribution of times.
 
 As with 3x3 and 4x4 Boggle, the top boards can all be found via
 hillclimbing.
@@ -1125,10 +1165,8 @@ Here are the top five boards for ENABLE2K and NASPA2023:
   )
 
 There is considerable overlap between the highest-scoring boards for
-each wordlist. NASPA2023 and ENABLE2K share a top board, and top board
+each wordlist. NASPA2023 and ENABLE2K share a top board. The top board
 for OSPD5 is the \#2 board for ENABLE2K.
-
-\*This run did not include the deduped multiboggle optimization.
 
 === Extension to maximizing word count
 <extension-to-maximizing-word-count>
@@ -1145,8 +1183,7 @@ the wordiest 4x4 board, we'd expect the hillclimbing winner to be the
 global optimum here as well.
 
 These boards have significant overlap with the highest-scoring boards.
-The \#1 wordiest board for ENABLE2K is serglanepitssero with 1,158 words
-and 3,569 points. This is also the \#8 highest-scoring board. Its middle
+Table N shows the wordiest board for ENABLE2K. This is also the \#8 highest-scoring board. Its middle
 two columns are identical to those of the highest-scoring board.
 
 #boggle.board(
@@ -1155,14 +1192,13 @@ two columns are identical to those of the highest-scoring board.
   [P], [I], [T], [S],
   [S], [E], [R], [O]
   , caption: [The "wordiest" known board for ENABLE2K with 1,158 words and 3,569 points.]
-  , numbering: none
 )
 
 === Variation: Powers of Two Boggle
 <variation-powers-of-two-boggle>
-It's surprising that you get more points for longer words, but only up
+It's surprising that you score more points for longer words, but only up
 to eight letters. What if you kept getting more points for longer words?
-We can set `SCORES=[1, 2, 4, 8, 16, ...]` to play “powers of two”
+We can set `SCORES=[0, 0, 0, 1, 2, 4, 8, 16, ...]` to play “powers of two”
 Boggle, where a three letter word is still worth one point, but an eight
 letter word is worth 32, a sixteen letter word is worth 8,192 points and
 a seventeen letter word (which must contain a Qu) is worth 16,384
@@ -1173,7 +1209,7 @@ board in this version of Boggle. The best board found in 50 hillclimbing
 runs was `cineqetnsniasesl` (28,542 points). However, we can
 exhaustively search all boards containing a 17-letter word to find
 `rpqaselinifcoita` (44,726 points). Over a third of this board's points
-come from the word “prequalifications.”
+come from the single word “prequalifications.”
 
 #boggle.board(
   [R], [P], [Qu], [A],
@@ -1196,8 +1232,8 @@ boards.
 Contrast this with powers of two Boggle, where a one character change is
 likely to remove the longest word on a great board.
 
-- highest-scoring neighbor of powers of two: rvqaselinifcoita (20084)
-- highest-scoring neighbor of regular winner: perslatgsineders (3488)
+// - highest-scoring neighbor of powers of two: rvqaselinifcoita (20084)
+// - highest-scoring neighbor of regular winner: perslatgsineders (3488)
 
 == Future Work
 <future-work>
@@ -1209,8 +1245,8 @@ every wordlist, for other languages, or for the most word-dense boards.
 Further incremental optimizations and reductions in compute costs might
 make this more attractive.
 
-There is also a 5x5 version of Boggle (”Big Boggle”), and there was a
-limited run of a 6x6 version (”Super Big Boggle”). These are much harder
+There is also a 5x5 version of Boggle ("Big Boggle"), and there was a
+limited run of a 6x6 version ("Super Big Boggle"). These are much harder
 problems. Even with all the optimizations presented in this paper, an
 exhaustive search for the best 5x5 Boggle board is expected to take on
 the order of a billion CPU years. This suggests that a radically
@@ -1219,8 +1255,8 @@ different approach is required.
 #figure(
   align(center)[#table(
   columns: 2,
-  align: (auto,auto,),
-  table.header([#strong[Board Size];], [#strong[CPU time];],),
+  align: (right,left,),
+  table.header([#strong[Dims];], [#strong[CPU time];],),
   table.hline(),
   [3x3], [70s],
   [3x4], [6h],
@@ -1234,8 +1270,8 @@ different approach is required.
 Here are a few alternative approaches that would be interesting to
 explore:
 
-- #strong[SMT/ILP solvers] The NP-Hard proof showed that Boggle
-  maximization maps onto well-known SAT problems. These problems are often
+- #strong[SMT/ILP solvers] The NP-Hard proof mapped Boggle
+  maximization onto well-known SAT problems. These problems are often
   tackled using ILP Solvers like Z3, OR-Tools or Gurobi. A preliminary
   investigation didn't show much promise here, but this is a large field
   and there may be some better way to frame the problem.
@@ -1252,7 +1288,7 @@ explore:
   [I], [E], [T], [I], [L],
   [D], [S], [R], [A], [C],
   [S], [E], [P], [E], [S],
-  caption: [Best known 5x5 board for ENABLE2K (10,406 points)]
+  caption: [Best known 5x5 board for ENABLE2K, with 2,344 words and 10,406 points]
 )
 
 == Conclusions
