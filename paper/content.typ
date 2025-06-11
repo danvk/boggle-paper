@@ -1,3 +1,5 @@
+#import "code.typ"
+
 == Introduction
 <introduction>
 Boggle is a word search game invented in 1972 by Allan D. Turoff and
@@ -75,34 +77,7 @@ is to prune out prefixes such as “bnj” that don't begin any words in the
 dictionary. This is typically done using a Trie (Prefix Tree) data
 structure.
 
-```python
-# Listing 0: Scoring a Boggle Board
-def score(bd: str, trie: Trie) -> int:
-  used = {}
-
-  def step(idx: int, node: Trie) -> int:
-    score = 0
-    used[idx] = True
-    if node.has_child(bd[idx]):
-      n = node.child(bd[idx])
-      if n.is_word() and not n.is_visited():
-        score += SCORES[n.length()]
-        n.set_visited()
-      for n_idx in NEIGHBORS[idx]:
-        if not used.get(n_idx):
-          score += step(n_idx, n)
-    used[idx] = False
-    return score
-
-  score = 0
-  for i in range(m * n):
-    score += step(i, trie)
-  return score
-```
-
-#import "code.typ"
-
-#code.load_code("/src/listings/find_words.py", "python", "# Listing", "# /Listing")
+#code.from_src("/src/listings/find_words.py")
 
 Nodes in the Trie are marked as we find words to avoid double-counting.
 With some care, it is possible to find the score of individual boards
@@ -387,34 +362,7 @@ similar manner to an ordinary Boggle solver,
 except that we need two loops now: one for neighbors, and a new one for
 each possible letter on each cell:
 
-```python
-# Listing 3: sum bound on a Boggle board class
-def sum_bound(
-  board_class: list[str], trie: Trie
-) -> int:
-  used = {}
-
-  def step(idx: int, node: Trie) -> int:
-    score = 0
-    used[idx] = True
-    letters = board_class[idx]
-    for letter in letters:  # new loop
-      if node.has_child(letter):
-        n = node.child(letter)
-        if n.is_word() and not n.is_visited():
-          score += SCORES[n.length()]
-          n.set_visited()
-        for n_idx in NEIGHBORS[idx]:
-          if not used.get(n_idx):
-            score += step(n_idx, n)
-    used[idx] = False
-    return score
-
-  score = 0
-  for i in range(m * n):
-    score += step(i, trie)
-  return score
-```
+#code.from_src("/src/listings/sumbound.py")
 
 Clearly we have $ "sum_bound"(C) >= "Score"(B) forall B in C $ because every
 word on every possible board contributes to the bound.
@@ -454,35 +402,7 @@ We can model this by taking the the max across the letter possibilities
 on a cell instead of the sum. In doing so, we dispense with any attempt
 to enforce the constraint that a word can only be found once.
 
-```python
-# Listing 4: max bound on a Boggle board class
-def max_bound(
-  board_class: list[str], trie: Trie
-) -> int:
-  used = {}
-
-  def step(idx: int, node: Trie) -> int:
-    score = 0
-    used[idx] = True
-    letters = board_class[idx]
-    for letter in letters:
-      if node.has_child(letter):
-        letter_score = 0
-        n = node.child(letter)
-        if n.is_word():
-          letter_score += SCORES[n.length()]
-        for n_idx in NEIGHBORS[idx]:
-          if not used.get(n_idx):
-            letter_score += step(n_idx, n)
-        score = max(score, letter_score)
-    used[idx] = False
-    return score
-
-  bound = 0
-  for i in range(m * n):
-    bound += step(i, trie)
-  return bound
-```
+#code.from_src("/src/listings/maxbound.py")
 
 We can see that this is a valid bound because, for any particular board
 `B` in a class `C`:
@@ -608,42 +528,7 @@ operations on the tree.
 First, we refactor `max_bound` to use two functions. These will become
 two types of nodes in our tree:
 
-```python
-# Listing 5: max bound with two functions
-def max_bound(
-  board_class: list[str], trie: Trie
-) -> int:
-  used = {}
-
-  def choice_step(idx, node):
-    score = 0
-    used[idx] = True
-    letters = board_class[idx]
-    for letter in letters:
-      if node.has_child(letter):
-        child = node.child(letter)
-        score = max(
-          score,
-          sum_step(idx, child),
-        )
-    used[idx] = False
-    return score
-
-  def sum_step(idx, node):
-    score = 0
-    if node.is_word():
-      points = SCORES[node.length()]
-      score += points
-    for n_idx in NEIGHBORS[idx]:
-      if not used.get(n_idx):
-        score += choice_step(n_idx, node)
-    return score
-
-  bound = 0
-  for i in range(m * n):
-    bound += choice_step(i, trie)
-  return bound
-```
+#code.from_src("/src/listings/max_refactor.py")
 
 This is a simple transformation of the previous `max_bound`. With this
 new formulation, we construct a tree where each node corresponds to one
@@ -749,37 +634,7 @@ nodes, and less than or equal to Bound on Choice nodes.
 So what is $"Force"(T, B)$? We can write out code to calculate
 this by modifying Listing N:
 
-```python
-# Listing 6: Build+Force operation on Tree
-def forced_tree(
-  board_class: list[str], board: str, trie
-):
-  used = {}
-
-  def choice_step(idx, trie):
-    score = 0
-    used[idx] = True
-    letter = board[idx]
-    if trie.has_child(letter):
-      n = trie.child(letter)
-      score = sum_step(idx, n)
-    used[idx] = False
-    return score
-
-  def sum_step(idx, trie):
-    score = 0
-    if trie.is_word():
-      score += SCORES[trie.length()]
-    for n_idx in NEIGHBORS[idx]:
-      if not used.get(n_idx):
-        score += choice_step(n_idx, trie)
-    return score
-
-  bound = 0
-  for i in range(m * n):
-    bound += choice_step(i, trie)
-  return bound
-```
+#code.from_src("/src/listings/force.py")
 
 We can make a few immediate observations:
 
@@ -909,30 +764,7 @@ Path p = list((cell, letter))
 
 Then we can define `add_word`:
 
-```python
-# Listing 7: add_word to sum/choice tree
-def add_word(
-  node: SumNode, path: Path, points: int
-):
-  if len(path) == 0:
-    node.points += points
-    return node
-
-  cell, letter = path[0]
-  choice_n = find(
-    node.children, lambda c: c.cell == cell
-  )
-  if not choice_n:
-    choice_n = ChoiceNode(cell=cell)
-    node.children.append(choice_n)
-
-  sum_n = choice_n.children.get(letter)
-  if not sum_n:
-    sum_n = SumNode()
-    choice_n.children[letter] = sum_n
-
-  return add_word(sum_n, path[1:], points)
-```
+#code.from_src("/src/listings/add_word.py")
 
 *Lemma*: This produces an identical tree.
 
@@ -996,38 +828,7 @@ cells appear closer to the root of the tree):
 
 We can produce a tree using this ordering:
 
-#block(
-```python
-# Listing 8: Building an orderly tree
-def build_orderly_tree(board_class, trie):
-  root = SumNode()
-
-  def choice_step(idx, trie, choices):
-    letters = board_class[idx]
-    for letter in letters:
-      if trie.has_child(letter):
-        choices.append((idx, letter))
-        child = trie.child(letter)
-        sum_step(idx, child, choices)
-        choices.pop()
-
-  def sum_step(idx, trie, choices):
-    if trie.is_word():
-      ordered_choices = sorted(
-        choices, key=lambda c: -ORDER[c[0]]
-      )
-      score = SCORES[trie.length()]
-      add_word(root, ordered_choices, score)
-    for n_idx in NEIGHBORS[idx]:
-      if n_idx not in (c[0] for c in choices):
-        choice_step(n_idx, trie, choices)
-
-  for i in range(m * n):
-    choice_step(i, trie, [])
-  return root
-```,
-breakable: false
-)
+#code.from_src("/src/listings/orderly.py")
 
 Because the cells follow a particular order and the resulting tree looks
 more “well-ordered,” we refer to these as Orderly Sum/Choice Trees or
@@ -1120,35 +921,7 @@ tree, i.e.~the one with the first position in the canonical order. This
 is a “merge” operation on Orderly Trees, which is straightforward to
 implement as in Listing N.
 
-```python
-# Listing 9: merge operation on orderly trees
-# merge: (Orderly(N), Orderly(N)) -> Orderly(N)
-def merge(a: SumNode, b: SumNode) -> SumNode:
-  by_cell = {c.cell: c for c in a.children}
-  for bc in b.children:
-    ac = by_cell.get(bc.cell)
-    by_cell[bc.cell] = (
-      merge_choice(ac, bc) if ac else bc
-    )
-  ch = sorted(
-    by_cell.values(),
-    key=lambda c: -ORDER[c.cell],
-  )
-  return SumNode(
-    points=a.points + b.points, children=ch
-  )
-
-# merge_choice: (OrderlyChoice(N), OrderlyChoice(N))
-#               -> OrderlyChoice(N)
-def merge_choice(
-  a: ChoiceNode, b: ChoiceNode
-) -> ChoiceNode:
-  ch = {**a.children}
-  for choice, bc in b.children.items():
-    ac = ch.get(choice)
-    ch[choice] = merge(ac, bc) if ac else bc
-  return ChoiceNode(cell=a.cell, children=ch)
-```
+#code.from_src("/src/listings/merge.py")
 
 *Lemma*: $"Force"("merge"(T_1, T_2), B) = "Force"(T_1, B) + "Force"(T_2, B) forall B in T_1, T_2$
 
@@ -1156,36 +929,7 @@ With the “merge” helper, we can define the “branch” operation.
 Note that `top_cell` here isn't really a free parameter; if the tree is
 $"Orderly"(N)$, then we must have $"top_cell"=N$.
 
-```python
-# Listing 10: branch operation on orderly trees
-# branch: Orderly(N) -> list(Orderly(N-1))
-def branch(
-  o: SumNode,
-  N: int,
-  board_class: list[str],
-) -> list[SumNode]:
-  top_choice = find(
-    o.children, lambda c: c.cell == N
-  )
-  if not top_choice:
-    # cell is irrelevant; o is Orderly(N-1)
-    return [o for _ in board_class[N]]
-
-  other_choices = [
-    c for c in o.children if c.cell != N
-  ]
-  skip_tree = SumNode(
-    children=other_choices, points=o.points
-  )  # Orderly(N-1)
-  return [
-    merge(
-      top_choice.children[letter], skip_tree
-    )  # both are Orderly(N-1)
-    if top_choice.children.get(letter)
-    else skip_tree  # dead letter on cell N.
-    for letter in board_class[N]
-  ]
-```
+#code.from_src("/src/listings/merge.py", start: "branch operation")
 
 The `branch` function splits the tree into two parts: one that includes
 the words that go through the “top” cell (`top_choice`) and another
@@ -1254,106 +998,13 @@ for the next cell and, for each choice, push all the next child cells.
 We can maintain a bound as we do this. If the bound
 ever drops below `S_high`, we can abandon this search path.
 
-#block(
-```python
-# Listing 11: orderly_bound
-# Assumes N >= 1
-def orderly_bound(
-  root: SumNode,  # Orderly(N)
-  board_class: list[str],
-  S_high: int,
-):
-  def step(
-    points: int,
-    idx: int,
-    # letters chosen on previous cells
-    choices: list[char],
-    stack: list[ChoiceNode],
-  ):
-    b = points + sum(bound(n) for n in stack)
-    if b < S_high:
-      return  # This path is eliminated
-    if idx == N:
-      # complete board that can't be eliminated
-      record_candidate_board(choices, b)
-      return
-
-    # Try each letter on the next cell.
-    cell = CELL_ORDER[idx]
-    for letter in board_class[cell]:
-      next_nodes = [
-        n for n in stack if n.cell == cell
-      ]
-      next_stack = [
-        n for n in stack if n.cell != cell
-      ]
-      next_points = points
-      next_choices = choices + [letter]
-      for node in next_nodes:
-        letter_node = node.children.get(letter)
-        if letter_node:
-          next_stack += letter_node.children
-          next_points += letter_node.points
-
-      step(
-        next_points,
-        idx + 1,
-        next_choices,
-        next_stack,
-      )
-
-  step(root.points, 0, [], root.children)
-```,
-breakable: false
-)
+#code.from_src("/src/listings/orderly_bound.py")
 
 *Lemma*: Each `step` call preserves the invariant that
 $ "points" + sum_(n in "stack") "Force"(n, B) = "Multi"(B) $ for all boards
 $B$ compatible with `choices`.
 
 The proof is by induction.
-
-Base case: The initial call to `step` has the root points, plus all the root's
-  children. This matches the definition of $"Force"$ for a `SumNode`.
-
-Inductive case: From the inductive hypothesis, for each board $B$, the call to `step` has
-  $ "points" + sum_(n in "stack") "Force"(n, B) = "Multi"(B) $
-
-For each next choice of letter, we replace each node from the stacks
-with its points and compatible children:
-
-```
-# stack: list[ChoiceNode]
-# letter: char
-next_points = points + sum(n.child[letter].points for n in stacks)
-next_stacks = [child for n in stacks for child in n.child[letter].children]
-```
-
-Then:
-
-// TODO: This is a mess
-
-#place(
-  auto,
-  scope: "parent",
-  float: true,
-  $ &"next_points" + sum_(n in "next_stacks")"Force"(n, B) \
-&= "next_points" +
-sum_(n in "stacks") sum_("child" in n."child"["letter"]."children")
-  "Force"("child", B) \
-&= "points" +
-sum_(n in "stacks") n."child"["letter"]."points" +
-sum_(n in "stacks") sum_("child" in n."child"["letter"]."children")
-  "Force"("child", B) \
-&= "points" + sum_(n in "stacks")
-  n."child"["letter"]."points" +
-    sum_("child" in n."child"["letter"]."children") "Force"("child", B) \
-&= "points" + sum_(n in "stacks") "Force"(n."child"["letter"], B) \
-&= "points" + sum_(n in "stacks") "Force"(n, B) #h(1cm) "definition of Force for ChoiceNode" \
-&= "Multi"(B)
-$,
-)
-
 
 *Theorem*: `OrderlyBound` finds all the boards $B$ in a tree with
   $"Multi"(B) >= S_"high"$.
