@@ -1,4 +1,5 @@
 #import "code.typ"
+#import "boggle.typ"
 
 == Introduction
 <introduction>
@@ -25,19 +26,13 @@ structure and algorithms tailor-made for Boggle, and a large amount of
 compute, we're able to establish for the first time that the best Boggle
 boards found via hillclimbing are, in fact, the global optima.
 
-#figure(
-  align(center)[#table(
-  columns: 4,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,auto,),
+#boggle.board(
   [P], [E], [R], [S],
   [L], [A], [T], [G],
   [S], [I], [N], [E],
   [T], [E], [R], [S],
-  )]
-  , kind: table
-  , caption: [The highest-scoring Boggle board for the ENABLE2K dictionary, with 1,045 words and 3,625 points. The longest word is "replastering."]
-  )
+  caption: [The highest-scoring Boggle board for the ENABLE2K dictionary, with 1,045 words and 3,625 points. The longest word is "replastering."]
+)
 
 == Terminology and Conventions
 <terminology-and-conventions>
@@ -60,7 +55,7 @@ We adopt the following terminology and conventions:
   use lowercase. No meaningful distinction is drawn between uppercase
   and lowercase in this paper.
 // TODO: this is not shown anywhere
-- The cells on an $M$x$N$ board are numbered $0...M*N-1$ in column-major
+- The cells on an $M$x$N$ board are numbered $0...M N-1$ in column-major
   order, as shown in Figure N. We refer to the letter on cell $i$ of
   board $B$ as $B_i$.
 - $"Words"(B)$ is the set of all words that can be found on the board $B$.
@@ -198,63 +193,39 @@ $ C(L_1, L_2, ..., L_(m dot n)) = { B | B_i in L_i forall i } $
 For example, here's a 3x3 board class where each cell can be one of two
 letters:
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [{A,B}], [{G,H}], [{M,N}],
   [{C,D}], [{I,J}], [{O,P}],
-  [{E,F}], [{K,L}], [{Qu,R}],
-  )]
-  , kind: table
+  [{E,F}], [{K,L}], [{Qu,R}]
   , caption: [A 3x3 board class containing 512 boards]
-  )
+)
 
 This board class contains $2^9$ = 512 possible boards. Here are a few of
 them:
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [A], [G], [M],
   [D], [I], [P],
-  [E], [L], [R],
-  )]
-  , kind: table
+  [E], [L], [R]
   , caption: [agmdipelr: 85 points]
   , numbering: none
-  )
+)
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [B], [H], [M],
   [C], [I], [P],
-  [E], [L], [R],
-  )]
-  , kind: table
+  [E], [L], [R]
   , caption: [bhmcipelr: 62 points]
   , numbering: none
-  )
+)
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [B], [H], [M],
   [D], [J], [P],
-  [F], [K], [Qu],
-  )]
-  , kind: table
+  [F], [K], [Qu]
   , caption: [bhmdjpfkq: 0 points]
   , numbering: none
-  )
+)
 
 Analogous to the $B_i$ notation for boards, we can indicate the possible
 letters on a cell in a board class as $C_i$. On this board class, for
@@ -290,58 +261,34 @@ To “branch” from a board class, we split one of its cells into the
 individual possibilities. For example, starting with this board class
 containing 5,062,500 boards:
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [lnrsy], [chkmpt], [lnrsy],
   [aeiou], [aeiou], [aeiou],
-  [chkmpt], [lnrsy], [bdfgjqvwxz],
-  )]
-  , kind: table
-  )
+  [chkmpt], [lnrsy], [bdfgjqvwxz]
+)
 
 we might split the center cell to get five board classes containing
 1,012,500 boards each:
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [lnrsy], [chkmpt], [lnrsy],
   [aeiou], [a], [aeiou],
   [chkmpt], [lnrsy], [bdfgjqvwxz],
-  )]
-  , kind: table
-  )
+)
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [lnrsy], [chkmpt], [lnrsy],
   [aeiou], [e], [aeiou],
   [chkmpt], [lnrsy], [bdfgjqvwxz],
-  )]
-  , kind: table
-  )
+)
 
 #align(center)[…]
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [lnrsy], [chkmpt], [lnrsy],
   [aeiou], [u], [aeiou],
   [chkmpt], [lnrsy], [bdfgjqvwxz],
-  )]
-  , kind: table
-  )
+)
 
 Since the center and edge cells have the greatest connectivity, we split
 these first before splitting the corners.
@@ -375,16 +322,10 @@ Unfortunately, this bound is imprecise because it doesn't take into
 account that some letter choices are mutually exclusive. For example,
 consider this 2x2 board class containing two individual boards:
 
-#figure(
-  align(center)[#table(
-  columns: 2,
-  stroke: 0.5pt,
-  align: (auto,auto,),
+#boggle.board(
   [F], [{A, U}],
   [.], [R],
-  )]
-  , kind: table
-  )
+)
 
 There are two words here, “far” and “fur.” These each count for 1 point,
 so the sum bound of the board class is 2. No individual board can
@@ -445,16 +386,10 @@ cases. It's still imprecise, however, because it might choose different
 letters for a cell along different search paths in the DFS. Consider
 this 2x2 board class:
 
-#figure(
-  align(center)[#table(
-  columns: 2,
-  stroke: 0.5pt,
-  align: (auto,auto,),
+#boggle.board(
   [T], [I],
   [{A, E}], [R],
-  )]
-  , kind: table
-  )
+)
 
 Starting with the “T:”
 
@@ -488,19 +423,12 @@ completes in about an hour on a single CPU core. This represents roughly
 a 300x speedup. The highest-scoring 3x3 boards found via Branch & Bound
 precisely match those found via hillclimbing.
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,),
+#boggle.board(
   [S], [T], [R],
   [E], [A], [E],
-  [D], [L], [P],
-  )]
-  , kind: table
-  , caption: [The highest-scoring 3x3 board, with 545 points. Long words include
-“repasted” and “replated.”]
-  )
+  [D], [L], [P]
+  , caption: [The highest-scoring 3x3 board, with 545 points. Long words include “repasted” and “replated.”]
+)
 
 This speedup makes 3x3 Boggle maximization easy on a laptop and 3x4
 maximization possible in a data center. But it offers little hope for
@@ -568,16 +496,10 @@ In practice, the bound can be stored explicitly on each node and updated
 as we modify the tree. Here's what one of these trees looks like for the
 TAR/TIER board from earlier:
 
-#figure(
-  align(center)[#table(
-  columns: 2,
-  stroke: 0.5pt,
-  align: (auto,auto,),
+#boggle.board(
   [cell 0: T], [cell 2: I],
   [cell 1: {A, E}], [cell 3: R],
-  )]
-  , kind: table
-  )
+)
 
 #figure(image("tree.svg"),
   caption: [
@@ -626,7 +548,7 @@ Force(n: ChoiceNode, B) = Force(n.choices[B_{n.cell}], B) or 0
 
 Intuitively, this “forces” each cell to match the board `B`.
 
-Lemma: If $T="BuildTree"(C)$, then $ "Force"(T, B) <= "Bound"(T) forall B in C $
+*Lemma*: If $T="BuildTree"(C)$, then $ "Force"(T, B) <= "Bound"(T) forall B in C $
 
 This is immediate from the definition. Force is the same as Bound on Sum
 nodes, and less than or equal to Bound on Choice nodes.
@@ -648,10 +570,11 @@ We'll refer to this as $"Multi"(B)$, the “Multiboggle score” of $B$. This
 can be thought of as a variation on Boggle where you're allowed to find
 the same word multiple times. For example, this 2x3 Boggle board:
 
-```
-E B E
-E F E
-```
+#boggle.board(
+  [E], [B], [E],
+  [E], [F], [E],
+)
+
 
 Has $"Score"(B) = 3$ (”bee”, “fee”, “beef”) but $"Multi"(B) = 12$ because
 each word can be found along four distinct paths.
@@ -687,19 +610,13 @@ Figure N has $"Score"(B) = 189$, but $"Multi"(B) = 21953$! (The word
 “reservers” can be found in 100 distinct ways.) We will partially
 address this issue later in the paper.
 
-#figure(
-  align(center)[#table(
-  columns: 4,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,auto,),
+#boggle.board(
   [E], [E], [E], [S],
   [R], [V], [R], [R],
   [E], [E], [E], [S],
-  [R], [S], [R], [S],
-  )]
-  , kind: table
+  [R], [S], [R], [S]
   , caption: [Pathological board with Score(B)=189 but Multi(B)=21,953.]
-  )
+)
 
 === Sum/Choice Satisfiability is NP-Hard
 <sumchoice-satisfiability-is-np-hard>
@@ -813,18 +730,12 @@ the most words, it makes the most sense to put them at the top of the
 tree. For 4x4 Boggle, we use the following ordering (higher numbered
 cells appear closer to the root of the tree):
 
-#figure(
-  align(center)[#table(
-  columns: 4,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,auto,),
+#boggle.board(
   [3], [7], [5], [2],
   [11], [15], [13], [10],
   [9], [14], [12], [8],
   [1], [6], [4], [0],
-  )]
-  , kind: table
-  )
+)
 
 We can produce a tree using this ordering:
 
@@ -1004,7 +915,7 @@ ever drops below `S_high`, we can abandon this search path.
 $ "points" + sum_(n in "stack") "Force"(n, B) = "Multi"(B) $ for all boards
 $B$ compatible with `choices`.
 
-The proof is by induction.
+The proof is by induction, and is omitted for brevity.
 
 *Theorem*: `OrderlyBound` finds all the boards $B$ in a tree with
   $"Multi"(B) >= S_"high"$.
@@ -1071,30 +982,18 @@ score many millions of Boggle boards to filter them out.
 We can improve the situation slightly. Consider the BEE/FEE/BEEF board
 from earlier:
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto),
+#boggle.board(
   [E], [B], [E],
   [E], [F], [E],
-  )]
-  , kind: table
-  )
+)
 
 The max bound counted each of these words four times. If we consider
 this in the context of a board class, however:
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto),
+#boggle.board(
   [{E,X}], [B], [{E,X}],
   [{E,X}], [F], [{E,X}],
-  )]
-  , kind: table
-  )
+)
 
 we can see that “BEE” can be found on the left only when both cells are
 E, not X, and similarly on the right. But when both of the left cells
@@ -1115,16 +1014,10 @@ We do still need to add both the left and the right versions of BEE, FEE
 and BEEF. If we only added the left versions, then we'd miss the points
 for this board in the board class:
 
-#figure(
-  align(center)[#table(
-  columns: 3,
-  stroke: 0.5pt,
-  align: (auto,auto,auto),
+#boggle.board(
   [X], [B], [E],
   [X], [F], [E],
-  )]
-  , kind: table
-  )
+)
 
 And we'd no longer have a valid upper bound.
 
@@ -1256,20 +1149,14 @@ The \#1 wordiest board for ENABLE2K is serglanepitssero with 1,158 words
 and 3,569 points. This is also the \#8 highest-scoring board. Its middle
 two columns are identical to those of the highest-scoring board.
 
-#figure(
-  align(center)[#table(
-  columns: 4,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,auto,),
+#boggle.board(
   [S], [E], [R], [G],
   [L], [A], [N], [E],
   [P], [I], [T], [S],
-  [S], [E], [R], [O],
-  )]
-  , kind: table
+  [S], [E], [R], [O]
   , caption: [The "wordiest" known board for ENABLE2K with 1,158 words and 3,569 points.]
   , numbering: none
-  )
+)
 
 === Variation: Powers of Two Boggle
 <variation-powers-of-two-boggle>
@@ -1288,20 +1175,14 @@ exhaustively search all boards containing a 17-letter word to find
 `rpqaselinifcoita` (44,726 points). Over a third of this board's points
 come from the word “prequalifications.”
 
-#figure(
-  align(center)[#table(
-  columns: 4,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,auto,),
+#boggle.board(
   [R], [P], [Qu], [A],
   [S], [E], [L], [I],
   [N], [I], [F], [C],
-  [O], [I], [T], [A],
-  )]
-  , kind: table
+  [O], [I], [T], [A]
   , numbering: none
   , caption: [The best known board for "powers of two" Boggle, containing the 16,384-point word "prequalifications."]
-  )
+)
 
 This failure gives us some insights into why hillclimbing is effective
 at finding the highest-scoring and wordiest boards. Those scores both
@@ -1365,21 +1246,14 @@ explore:
   tree-heavy and full of data dependencies. Still, there might be
   another way to frame the problem that results in better acceleration.
 
-#figure(
-  align(center)[#table(
-  columns: 5,
-  stroke: 0.5pt,
-  align: (auto,auto,auto,auto,auto,),
+#boggle.board(
   [L], [I], [G], [D], [R],
   [M], [A], [N], [E], [S],
   [I], [E], [T], [I], [L],
   [D], [S], [R], [A], [C],
   [S], [E], [P], [E], [S],
-  )]
-  , kind: table
-  )
-
-#emph[Best known 5x5 board for ENABLE2K (10,406 points)]
+  caption: [Best known 5x5 board for ENABLE2K (10,406 points)]
+)
 
 == Conclusions
 <conclusions>
