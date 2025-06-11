@@ -107,6 +107,7 @@
 
   doc
 }
+
 #show: doc => conf(
   title: [A Computational Proof of the Highest-Scoring Boggle Board],
   authors: (

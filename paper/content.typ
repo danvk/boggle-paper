@@ -100,6 +100,10 @@ def score(bd: str, trie: Trie) -> int:
   return score
 ```
 
+#import "code.typ"
+
+#code.load_code("/src/listings/find_words.py", "python", "# Listing", "# /Listing")
+
 Nodes in the Trie are marked as we find words to avoid double-counting.
 With some care, it is possible to find the score of individual boards
 extremely rapidly on modern hardware. For example, the author's laptop

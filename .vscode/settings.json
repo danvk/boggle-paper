@@ -7,5 +7,6 @@
         "editor.wordBasedSuggestions": "off",
         "editor.formatOnSave": true,
         "editor.indentSize": 2
-    }
+    },
+    "tinymist.rootPath": "${workspaceFolder}"
 }
