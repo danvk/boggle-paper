@@ -37,7 +37,6 @@ ORDER = SPLIT_ORDER[(4, 4)]
 
 
 # Listing 9: merge operation on orderly trees
-# merge: (Orderly(N), Orderly(N)) -> Orderly(N)
 def merge(a: SumNode, b: SumNode) -> SumNode:
   by_cell = {c.cell: c for c in a.children}
   for bc in b.children:
@@ -51,8 +50,6 @@ def merge(a: SumNode, b: SumNode) -> SumNode:
   )
 
 
-# merge_choice: (OrderlyChoice(N), OrderlyChoice(N))
-#               -> OrderlyChoice(N)
 def merge_choice(
   a: ChoiceNode, b: ChoiceNode
 ) -> ChoiceNode:
@@ -67,7 +64,6 @@ def merge_choice(
 
 
 # Listing 10: branch operation on orderly trees
-# branch: Orderly(N) -> list(Orderly(N-1))
 def branch(
   o: SumNode,
   N: int,
@@ -77,7 +73,7 @@ def branch(
     o.children, lambda c: c.cell == N
   )
   if not top_choice:
-    # cell is irrelevant; o is Orderly(N-1)
+    # cell is irrelevant;
     return [o for _ in board_class[N]]
 
   other_choices = [
@@ -85,11 +81,9 @@ def branch(
   ]
   skip_tree = SumNode(
     children=other_choices, points=o.points
-  )  # Orderly(N-1)
+  )
   return [
-    merge(
-      top_choice.children[letter], skip_tree
-    )  # both are Orderly(N-1)
+    merge(top_choice.children[letter], skip_tree)
     if top_choice.children.get(letter)
     else skip_tree  # dead letter on cell N.
     for letter in board_class[N]
