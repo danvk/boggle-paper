@@ -51,14 +51,12 @@ We adopt the following terminology and conventions:
   write out the letters of the board in row-major order. (This
   distinction is only important for non-square dimensions such as 2x3
   and 3x4 Boggle, which lack reflectional symmetry.)
-// TODO: this board is not shown anywhere
 - Because one of the Boggle dice contains a “Qu” (two letters), we adopt
   the convention that `q` indicates a Qu cell. So `qaicdrneetasnnil`
   refers to the board in Figure N.
 - Boggle dice use uppercase letters (except for Qu), but we typically
   use lowercase. No meaningful distinction is drawn between uppercase
   and lowercase in this paper.
-// TODO: this is not shown anywhere
 - The cells on an $M$x$N$ board are numbered $0...M N-1$ in row-major
   order, as shown in Figure N. We refer to the letter on cell $i$ of
   board $B$ as $B_i$.
@@ -326,6 +324,7 @@ It is possible to compute an upper bound on a board class directly using a DFS s
 
 Our tree structure consists of alternating layers of two types of nodes:
 
+#block([
 ```
 Node := SumNode | ChoiceNode
 
@@ -337,6 +336,9 @@ SumNode:
   points: int
   children: ChoiceNode[]
 ```
+]
+  , breakable: false
+)
 
 `SumNode.points` is the points on an individual node, not a bound for the entire subtree.
 
@@ -367,7 +369,7 @@ Intuitively, this “forces” each cell to match the board $B$, discarding all 
 
 Here $P in B$ means that the path is compatible with the board, that is to say:
 
-$ P in B := B_"cell" = "letter" forall ("cell", "letter") in P $
+$ (P in B) := B_"cell" = "letter" forall ("cell", "letter") in P $
 
 This result follows directly from the definitions of `add_word` and $F$. This lemma tells us that the Sum/Choice tree acts as a container structure for paths to words on a Boggle board.
 
@@ -390,10 +392,12 @@ This means that, when we add a word to a tree, we're free to permute its cells i
 
 We're now ready to build trees.
 
+#block(
+  [#code.from_src("/src/listings/orderly.py")]
+  , breakable: false
+)
 
-#code.from_src("/src/listings/orderly.py")
-
-We can define a "bound" operation, $U$, on sum/choice trees:
+We can define a "upper bound" operation, $U$, on sum/choice trees:
 
 ```
 U(n: SumNode)
@@ -406,7 +410,7 @@ To show that this is a valid upper bound, we'll explore its relationship with th
 
 *Lemma*: $U(T) >= F(T, B) forall T, B$
 
-For a SumNode, the definition of $U$ and $F$ are identical. For a ChoiceNode, $F$ picks an individual child, whereas $U$ takes the max across all its children.
+For a SumNode, the definition of $U$ and $F$ are identical. For a ChoiceNode, $F$ picks an individual child, whereas $U$ takes the max across all its children. Hence $F(n) <= U(n)$ for ChoiceNodes as well.
 
 *Lemma*: $F("BuildTree"(C), B)$ is independent of $C$
 
@@ -424,7 +428,7 @@ $ M(B) := F(T, B) $
 
 This is clearly true, since the regular Boggle score includes each unique word once, whereas the Multiboggle score might include it multiple times. If a board does not contain any repeat letters, then $M(B) = S(B)$.
 
-*Theorem*: If $T = "BuildTree"(C)$, then $U(T) >= S(B) forall B in C$.
+*Theorem*: If $T = "BuildTree"(C)$, then $ U(T) >= S(B) #h(0.5em) forall B in C $
 
 That is to say, $U$ is a true upper bound. This follows from combining the previous lemmas:
 
@@ -441,32 +445,53 @@ Here's a small 2x2 board class containing two individual boards:
   [{A, E}], [R]
 )
 
-Here's the tree for that board class:
+@natural-tree and @orderly-tree show two trees for this board class, the first without word reordering ("spelling order") and the second with reording (an "orderly tree").
+
+#figure(image("tree.svg"),
+  caption: [
+  "Spelling order" tree for “t ae i r”; The bound `U(n)` is marked next to each node.
+  ],
+  placement: top
+)
+<natural-tree>
 
 #figure(image("orderly.svg"),
   caption: [
-  Orderly Tree for “t ae i r”; `Bound(node)` is marked under each
-node.
-  ]
+  Orderly Tree for “t ae i r”; The bound `U(n)` is marked under each node.
+  ],
+  placement: top
 )
-
-Both of these boards score seven points, so this bound is "tight."
+<orderly-tree>
 
 We can make a few observations about these Sum/Choice trees:
 
 - The wordlist and geometry of the Boggle board are fully encoded in the
   tree. Once the tree is constructed, we no longer need to reference the
   Trie or the `NEIGHBORS` array.
-- Words correspond to `SumNode`s with points on them. Because we re-ordered the cells on paths, a `SumNode` may have multiple words associated with it. For example,
-  the “+3” node on the top right of the tree visualization includes the
+- In the "spelling order" tree, `SumNode`s with points correspond to individual words. Each path to a word is associated with a single `SumNode`.
+- In the orderly tree, a `SumNode` may have multiple words associated with it. For example,
+  the “+3” node on the top right of @orderly-tree includes the
   words TAR, RAT and ART. If you can find one of these, you can find all
   of them.
+- The orderly tree has significantly fewer nodes (29 vs. 56) and a lower bound (7 vs 13). It has two ChoiceNodes for cell 1, compared with 7 for the "spelling order" tree.
 - The Orderly Tree for a board class, and hence the “orderly bound,” is
   dependent on the canonical order that we choose for the cells.
 
-While the bound was tight for this board class, this isn't always the case. `ChoiceNode`s for the same cell may appear multiple times in the tree. The bound may be imprecise because the `max` operation may not make the same choice on each `ChoiceNode`.
+Both of the boards in this board class score seven points, so the orderly tree's bound is "tight." This isn't always the case, however. `ChoiceNode`s for the same cell may appear multiple times in the tree. The bound may be imprecise because the `max` operation may not make the same choice on each `ChoiceNode`.
 
-Ordering the paths helped for this small board class, but the effect
+On this board class, for example:
+
+#boggle.board(
+  [T], [E],
+  [{A, O}], [D]
+)
+
+- There are three words that use all four cells: DATE, DOTE and TOED. So for this set of cells, it's better to pick "O" than "A."
+- There are many words that use "T," "E" and "A:" ATE, ETA, EAT, TEA. But there's only one word that uses "T," "E" and "O:" TOE. So for these cells, it's better to pick "A" than "O."
+
+These two are summed. Of course, the cell can't be both an "A" and an "O" at the same time, so this inconsistent choice results in an overcount. The bound is 10, whereas both boards score 8. (The "spelling order" bound is 11.)
+
+Ordering the paths helps for these small board class, but the effect
 is more dramatic for larger board classes:
 
 #figure(
@@ -521,7 +546,7 @@ satisfiability problem.
 Proof: We map from 3-CNF, a known NP-Hard problem, to the Sum/Choice
 Tree satisfiability problem.
 
-Suppose we have a 3-CNF formula with $m$ clauses on $x_1, x_2, ... x_n$.
+Suppose we have a 3-CNF formula with $m$ clauses on $x_1, x_2, ...,  x_n$.
 
 For each clause, we construct a tree which evaluates to 1 if the clause
 is satisfied and zero if it is not satisfied.
@@ -587,8 +612,7 @@ or doesn't). Adding their bounds will produce a valid bound for this
 choice of letters. Since the `merge` operation preserves the invariant,
 the resulting tree will have a valid bound.
 
-TODO: a visual would convey the intuition here, that “branch” is just a
-merge.
+// TODO: a visual would convey the intuition here, that “branch” is just a merge.
 
 Calling `branch` is considerably faster than building a new tree for
 each letter choice on a cell. For example, on the high-scoring 4x4 board
@@ -705,7 +729,7 @@ seems to work well in practice (see @switchover-table).
   align(center)[#table(
   columns: 4,
   align: (right+bottom,right + bottom,right + bottom,right+bottom),
-  table.header([#strong[Switchover Score];], [#strong[Time (s)];], [#strong[RAM (G)];], [#strong[Nodes];],),
+  table.header([#strong[Switchover Score];], [#strong[Time (s)];], [#strong[RAM (G)];], [#strong[Nodes \ Allocated];],),
   table.hline(),
   [$infinity$ (Bound)], [3629], [1.65], [89,638,760],
   [10,000], [152.8], [2.08], [269,306,267],
@@ -825,33 +849,25 @@ tasks in a MapReduce.
 
 == Results
 <results>
-The Branch and Bound procedure based on Orderly Trees runs significantly
-faster than the one based on `max_sum_bound`. For 3x3 Boggle with three
-letter buckets on a single core, the runtime goes from 1h → 2m, a 30x
-speedup.
 
-This speedup is greater for larger board classes. Using two letter
-buckets instead of three reduces the runtime to just 70s. Compared to
-the 12 days it would have taken for exhaustive search, this represents a
-15,000x speedup.
+=== Results for 3x3 and 3x4
 
-=== Results for 3x4
-<results-for-3x4>
-Using two letter buckets in the four corners and three buckets for the
-other eight cells, the Branch and Bound procedure completed in 5h54m on
-a single core. This represents a 3,000,000x speedup compared to the
-2,000 CPU years that exhaustive search would have required.
+The Branch and Bound procedure based on Orderly Trees is dramatically faster than brute force search. For 3x3 Boggle with two
+letter buckets on a single core, the Branch and Bound procedure completes in just 70 seconds. Compared to the 12 days it would have taken for exhaustive search, this represents a 15,000x speedup.
 
-Using the ENABLE2K wordlist, this search finds 33 distinct boards (up to
-symmetry) that score 1,500 points or more. Each of these boards can also
+Using ENABLE2K, this search finds 42 distinct boards (up to symmetry) that score 500 points or more. Each of these boards can also
 be found via the hillclimbing procedure, which gives us confidence that
 it is an effective way to find the global maximum.
 
+For 3x4 Boggle, we use two letter buckets in the four corners and three buckets for the other eight cells. The Branch and Bound procedure completes in 5h54m on
+a single core. This represents a 3,000,000x speedup compared to the
+2,000 CPU years that exhaustive search would have required.
+
+This search finds 33 distinct boards that score 1,500 points or more. Again, each of these boards can also be found via the hillclimbing procedure.
+
 === Results for 4x4
 <result-for-4x4>
-Two 4x4 runs were completed, one with the ENABLE2K wordlist and one with
-the NASPA2023 word list. The former was completed before the “deduped
-Multiboggle” optimization, and its runtime was longer.
+Three 4x4 runs were completed, with the ENABLE2K, OSPD5 and NASPA2023 word lists. The former was completed before the “deduped Multiboggle” optimization, and its runtime was longer. The same bucketing was used as 3x4: two buckets in the corners, three in the other cells.
 
 - *ENABLE2K*: Found 32 boards with Score$>=$3500 in 23,000 CPU hours
   #footnote[This run did predated the deduped multiboggle optimization, so it ran considerably slower than the other runs.]
@@ -859,11 +875,11 @@ Multiboggle” optimization, and its runtime was longer.
 - *NASPA2023*: Found 40 boards with Score$>=$3700 in 9,000 CPU hours.
 
 Compared to exhaustive search, this is roughly a billion times faster.
-Assuming \$0.05/core/hr, this is around \$400 of compute.
+Assuming \$0.05/core/hr, this is around \$400 of compute in 2025.
 
 // TODO: this might be the place to give more details on the run, e.g. distribution of times.
 
-As with 3x3 and 4x4 Boggle, the top boards can all be found via
+As with 3x3 and 3x4 Boggle, the top boards can all be found via
 hillclimbing.
 
 Here are the top five boards for ENABLE2K and NASPA2023:
@@ -884,7 +900,7 @@ Here are the top five boards for ENABLE2K and NASPA2023:
   )
 
 There is considerable overlap between the highest-scoring boards for
-each wordlist. NASPA2023 and ENABLE2K share a top board. The top board
+each wordlist. ENABLE2K and NASPA2023 share a top board. The top board
 for OSPD5 is the \#2 board for ENABLE2K.
 
 === Extension to maximizing word count
@@ -975,11 +991,11 @@ different approach is required.
   align(center)[#table(
   columns: 2,
   align: (right,left,),
-  table.header([#strong[Dims];], [#strong[CPU time];],),
+  table.header([#strong[Size];], [#strong[CPU time];],),
   table.hline(),
   [3x3], [70s],
   [3x4], [6h],
-  [4x4], [7500h],
+  [4x4], [9,000h],
   [4x5], [\~10,000 years],
   [5x5], [\~1B years],
   )]
