@@ -220,30 +220,31 @@ letters:
 This board class contains $2^9$ = 512 possible boards. Here are a few of
 them:
 
-// TODO: can these all fit on one line?
-
-#boggle.board(
+#table(
+  columns: 3,
+[#boggle.board(
   [A], [G], [M],
   [D], [I], [P],
   [E], [L], [R]
-  , caption: [agmdipelr: 85 points]
+  , caption: [85 points]
   , numbering: none
-)
+)],
 
-#boggle.board(
+[#boggle.board(
   [B], [H], [M],
   [C], [I], [P],
   [E], [L], [R]
-  , caption: [bhmcipelr: 62 points]
+  , caption: [62 points]
   , numbering: none
-)
+)],
 
-#boggle.board(
+[#boggle.board(
   [B], [H], [M],
   [D], [J], [P],
   [F], [K], [Qu]
-  , caption: [bhmdjpfkq: 0 points]
+  , caption: [0 points]
   , numbering: none
+)]
 )
 
 Analogous to the $B_i$ notation for boards, we can indicate the possible
@@ -354,12 +355,11 @@ Then we can define `add_word`:
 
 Next we define the “Force” operation, $F$. This sums all the paths to words found on a specific board class.
 
-```
-F(n: SumNode, B)
-= n.points + sum(F(c, B) for c in n.children)
-F(n: ChoiceNode, B)
-= F(n.choices[B_{n.cell}], B) if B_{n.cell} in n.choices else 0
-```
+$ F(n: "SumNode", B) := n."points" + sum_(n."children") F(c, B) \
+F(n: "ChoiceNode", B) := cases(
+  F(n."choices"[B_(n."cell")], B) \ #h(0.5em) "if" B_(n."cell") in n."choices",
+  0 "else",
+) $
 
 Intuitively, this “forces” each cell to match the board $B$, discarding all paths in the tree that don't match the board.
 
@@ -404,7 +404,7 @@ U(n: ChoiceNode)
 
 To show that this is a valid upper bound, we'll explore its relationship with the Force operation, $F$.
 
-*Lemma*: $U(T) >= F(T, B) forall B$
+*Lemma*: $U(T) >= F(T, B) forall T, B$
 
 For a SumNode, the definition of $U$ and $F$ are identical. For a ChoiceNode, $F$ picks an individual child, whereas $U$ takes the max across all its children.
 
@@ -466,15 +466,14 @@ We can make a few observations about these Sum/Choice trees:
 
 While the bound was tight for this board class, this isn't always the case. `ChoiceNode`s for the same cell may appear multiple times in the tree. The bound may be imprecise because the `max` operation may not make the same choice on each `ChoiceNode`.
 
-Using an Orderly Tree helped for this small board class, but the effect
+Ordering the paths helped for this small board class, but the effect
 is more dramatic for larger board classes:
 
 #figure(
   align(center)[#table(
   columns: 3,
   align: (right,right,right,),
-  table.header([#strong[Board];], [#strong[max\_bound];], [#strong[Orderly
-    bound];],),
+  table.header([#strong[Board];], [#strong[Unordered];], [#strong[Ordered];],),
   table.hline(),
   [2x2], [13], [7],
   [3x3 (a)], [6,361], [503],
@@ -568,7 +567,8 @@ implement as in Listing N.
 
 #code.from_src("/src/listings/merge.py")
 
-*Lemma*: $F("merge"(T_1, T_2), B) = F(T_1, B) + F(T_2, B) forall B in T_1, T_2$
+*Lemma*: $forall B in T_1, T_2$ $
+F("merge"(T_1, T_2), B) = F(T_1, B) + F(T_2, B) $
 
 No cells are destroyed by `merge`, and points are added when there's a collision.
 
@@ -720,7 +720,7 @@ seems to work well in practice (see @switchover-table).
   )
 <switchover-table>
 
-// TODO: move this section earlier
+// This is board_id=1365407
 
 === De-duplicated Multiboggle
 <de-duplicated-multiboggle>
