@@ -63,6 +63,7 @@
 
 <polygon fill="none" stroke="black" points="54,-292.8 0,-292.8 0,-256.8 54,-256.8 54,-292.8"/>
 <text text-anchor="middle" x="27" y="-270.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="27" y="-240.6" font-family="Comic Sans MS" font-size="14.00">bound=13</text>
 </g>
 <!-- r0_0 -->
 <g id="node2" class="node" pointer-events="visible" data-name="r0_0">
@@ -113,6 +114,7 @@
 
 <polygon fill="none" stroke="black" points="245.11,-479.8 191.11,-479.8 191.11,-443.8 245.11,-443.8 245.11,-479.8"/>
 <text text-anchor="middle" x="218.11" y="-457.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="238.11" y="-447.6" font-family="Comic Sans MS" font-size="14.00">4</text>
 </g>
 <!-- r0_0&#45;&#45;r0_0t -->
 <g id="edge15" class="edge" data-name="r0_0--r0_0t">
@@ -147,6 +149,7 @@
 
 <polygon fill="none" stroke="black" points="436.22,-538.8 382.22,-538.8 382.22,-502.8 436.22,-502.8 436.22,-538.8"/>
 <text text-anchor="middle" x="409.22" y="-516.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="430.22" y="-506.6" font-family="Comic Sans MS" font-size="14.00">1</text>
 </g>
 <!-- r0_0t0_1&#45;&#45;r0_0t0_1a -->
 <g id="edge3" class="edge" data-name="r0_0t0_1--r0_0t0_1a">
@@ -183,6 +186,7 @@
 
 <polygon fill="none" stroke="black" points="436.22,-479.8 382.22,-479.8 382.22,-443.8 436.22,-443.8 436.22,-479.8"/>
 <text text-anchor="middle" x="409.22" y="-457.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="429.22" y="-447.6" font-family="Comic Sans MS" font-size="14.00">3</text>
 </g>
 <!-- r0_0t1_2&#45;&#45;r0_0t1_2i -->
 <g id="edge13" class="edge" data-name="r0_0t1_2--r0_0t1_2i">
@@ -218,6 +222,7 @@
 <polygon fill="none" stroke="black" points="627.33,-519.4 573.33,-519.4 573.33,-478.2 627.33,-478.2 627.33,-519.4"/>
 <text text-anchor="middle" x="600.33" y="-503" font-family="Comic Sans MS" font-size="14.00">+1</text>
 <text text-anchor="middle" x="600.33" y="-486.2" font-family="Comic Sans MS" font-size="14.00">TIE</text>
+<text text-anchor="middle" x="620.33" y="-483" font-family="Comic Sans MS" font-size="14.00">2</text>
 </g>
 <!-- r0_0t1_2i0_1&#45;&#45;r0_0t1_2i0_1e -->
 <g id="edge7" class="edge" data-name="r0_0t1_2i0_1--r0_0t1_2i0_1e">
@@ -254,6 +259,7 @@
 
 <polygon fill="none" stroke="black" points="627.33,-470.8 573.33,-470.8 573.33,-434.8 627.33,-434.8 627.33,-470.8"/>
 <text text-anchor="middle" x="600.33" y="-448.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="620.33" y="-438.6" font-family="Comic Sans MS" font-size="14.00">1</text>
 </g>
 <!-- r0_0t1_2i1_3&#45;&#45;r0_0t1_2i1_3r -->
 <g id="edge11" class="edge" data-name="r0_0t1_2i1_3--r0_0t1_2i1_3r">
@@ -290,6 +296,7 @@
 
 <polygon fill="none" stroke="black" points="245.11,-326.8 191.11,-326.8 191.11,-290.8 245.11,-290.8 245.11,-326.8"/>
 <text text-anchor="middle" x="218.11" y="-304.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="238.11" y="-294.6" font-family="Comic Sans MS" font-size="14.00">4</text>
 </g>
 <!-- r1_1&#45;&#45;r1_1a -->
 <g id="edge29" class="edge" data-name="r1_1--r1_1a">
@@ -324,6 +331,7 @@
 
 <polygon fill="none" stroke="black" points="436.22,-375.8 382.22,-375.8 382.22,-339.8 436.22,-339.8 436.22,-375.8"/>
 <text text-anchor="middle" x="409.22" y="-353.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="429.22" y="-343.6" font-family="Comic Sans MS" font-size="14.00">3</text>
 </g>
 <!-- r1_1a0_2&#45;&#45;r1_1a0_2i -->
 <g id="edge23" class="edge" data-name="r1_1a0_2--r1_1a0_2i">
@@ -372,6 +380,7 @@
 <polygon fill="none" stroke="black" points="627.33,-378.4 573.33,-378.4 573.33,-337.2 627.33,-337.2 627.33,-378.4"/>
 <text text-anchor="middle" x="600.33" y="-362" font-family="Comic Sans MS" font-size="14.00">+1</text>
 <text text-anchor="middle" x="600.33" y="-345.2" font-family="Comic Sans MS" font-size="14.00">AIR</text>
+<text text-anchor="middle" x="620.33" y="-342" font-family="Comic Sans MS" font-size="14.00">2</text>
 </g>
 <!-- r1_1a0_2i1_3&#45;&#45;r1_1a0_2i1_3r -->
 <g id="edge21" class="edge" data-name="r1_1a0_2i1_3--r1_1a0_2i1_3r">
@@ -408,6 +417,7 @@
 
 <polygon fill="none" stroke="black" points="436.22,-326.8 382.22,-326.8 382.22,-290.8 436.22,-290.8 436.22,-326.8"/>
 <text text-anchor="middle" x="409.22" y="-304.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="429.22" y="-294.6" font-family="Comic Sans MS" font-size="14.00">1</text>
 </g>
 <!-- r1_1a1_3&#45;&#45;r1_1a1_3r -->
 <g id="edge27" class="edge" data-name="r1_1a1_3--r1_1a1_3r">
@@ -444,6 +454,7 @@
 
 <polygon fill="none" stroke="black" points="245.11,-277.8 191.11,-277.8 191.11,-241.8 245.11,-241.8 245.11,-277.8"/>
 <text text-anchor="middle" x="218.11" y="-255.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="238.11" y="-245.6" font-family="Comic Sans MS" font-size="14.00">1</text>
 </g>
 <!-- r2_2&#45;&#45;r2_2i -->
 <g id="edge35" class="edge" data-name="r2_2--r2_2i">
@@ -467,6 +478,7 @@
 
 <polygon fill="none" stroke="black" points="436.22,-277.8 382.22,-277.8 382.22,-241.8 436.22,-241.8 436.22,-277.8"/>
 <text text-anchor="middle" x="409.22" y="-255.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="429.22" y="-245.6" font-family="Comic Sans MS" font-size="14.00">1</text>
 </g>
 <!-- r2_2i0_3&#45;&#45;r2_2i0_3r -->
 <g id="edge33" class="edge" data-name="r2_2i0_3--r2_2i0_3r">
@@ -503,6 +515,7 @@
 
 <polygon fill="none" stroke="black" points="245.11,-201.8 191.11,-201.8 191.11,-165.8 245.11,-165.8 245.11,-201.8"/>
 <text text-anchor="middle" x="218.11" y="-179.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="238.11" y="-169.6" font-family="Comic Sans MS" font-size="14.00">4</text>
 </g>
 <!-- r3_3&#45;&#45;r3_3r -->
 <g id="edge54" class="edge" data-name="r3_3--r3_3r">
@@ -537,6 +550,7 @@
 
 <polygon fill="none" stroke="black" points="436.22,-223.8 382.22,-223.8 382.22,-187.8 436.22,-187.8 436.22,-223.8"/>
 <text text-anchor="middle" x="409.22" y="-201.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="429.22" y="-191.6" font-family="Comic Sans MS" font-size="14.00">1</text>
 </g>
 <!-- r3_3r0_1&#45;&#45;r3_3r0_1a -->
 <g id="edge39" class="edge" data-name="r3_3r0_1--r3_3r0_1a">
@@ -548,6 +562,7 @@
 
 <polygon fill="none" stroke="black" points="436.22,-179.8 382.22,-179.8 382.22,-143.8 436.22,-143.8 436.22,-179.8"/>
 <text text-anchor="middle" x="409.22" y="-157.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="429.22" y="-147.6" font-family="Comic Sans MS" font-size="14.00">2</text>
 </g><!-- r3_3r0_1&#45;&#45;r3_3r0_1e --><g id="edge44" class="edge" data-name="r3_3r0_1--r3_3r0_1e">
 
 <path fill="none" stroke="black" d="M335.89,-178.02C350.08,-174.84 367.66,-170.9 381.93,-167.69"/>
@@ -604,6 +619,7 @@
 
 <polygon fill="none" stroke="black" points="436.22,-84.8 382.22,-84.8 382.22,-48.8 436.22,-48.8 436.22,-84.8"/>
 <text text-anchor="middle" x="409.22" y="-62.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="429.22" y="-52.6" font-family="Comic Sans MS" font-size="14.00">2</text>
 </g><!-- r3_3r1_2&#45;&#45;r3_3r1_2i --><g id="edge52" class="edge" data-name="r3_3r1_2--r3_3r1_2i">
 
 <path fill="none" stroke="black" d="M335.89,-116.2C350.08,-106.5 367.66,-94.5 381.93,-84.75"/>
@@ -626,6 +642,7 @@
 
 <polygon fill="none" stroke="black" points="627.33,-84.8 573.33,-84.8 573.33,-48.8 627.33,-48.8 627.33,-84.8"/>
 <text text-anchor="middle" x="600.33" y="-62.6" font-family="Comic Sans MS" font-size="14.00">+</text>
+<text text-anchor="middle" x="620.33" y="-52.6" font-family="Comic Sans MS" font-size="14.00">1</text>
 </g><!-- r3_3r1_2i0_0&#45;&#45;r3_3r1_2i0_0t --><g id="edge48" class="edge" data-name="r3_3r1_2i0_0--r3_3r1_2i0_0t">
 
 <path fill="none" stroke="black" d="M527,-66.8C541.19,-66.8 558.77,-66.8 573.04,-66.8"/>
