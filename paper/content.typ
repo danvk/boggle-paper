@@ -992,14 +992,31 @@ practice, we build the tree for a board class, then call `branch` some
 number of times before switching over to `OrderlyBound`. The optimal
 switchover point is highly variable, but switching when
 $"n"."bound" <= 1.5 S_"high"$ or there are only four unmerged cells left
-seems to work well in practice.
+seems to work well in practice (see @switchover-table).
 
 // For the 5M board 3x3 class, calling `orderly_bound` with `S_high=500`
 // results in 55,483 calls to `step` and a maximum stack size of 167. The
 // most times a single node is added to the stack is 1,289.
 
-TODO: get some stats about how fast OrderlyBound is vs.~OrderlyMerge and
-how much memory they use.
+
+#figure(
+  align(center)[#table(
+  columns: 4,
+  align: (right+bottom,right + bottom,right + bottom,right+bottom),
+  table.header([#strong[Switchover Score];], [#strong[Time (s)];], [#strong[RAM (G)];], [#strong[Nodes];],),
+  table.hline(),
+  [$infinity$ (Bound)], [3629], [1.65], [89,638,760],
+  [10,000], [152.8], [2.08], [269,306,267],
+  [7,500], [76.93], [2.09], [452,922,484],
+  [6,000], [57.76], [2.07], [849,594,151],
+  [5,000], [65.49], [2.07], [1,554,322,820],
+  [4,000], [114.0], [2.10], [3,403,803,368],
+  [0 (Branch)], [175.4], [2.06], [5,406,460,230],
+  )]
+  , kind: table
+  , caption: [The effect of switchover score on runtime and memory usage for a single board class. $S_"high"$ was 3,500. Nodes is the total number of nodes that were allocated during Branch and Bound, not peak nodes.]
+  )
+<switchover-table>
 
 // TODO: move this section earlier
 
