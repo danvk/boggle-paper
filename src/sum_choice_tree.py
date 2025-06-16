@@ -32,9 +32,7 @@ def bound(n: SumNode | ChoiceNode) -> int:
     )
   elif isinstance(n, ChoiceNode):
     b = (
-      max(
-        bound(c) for c in n.children.values()
-      )
+      max(bound(c) for c in n.children.values())
       if n.children
       else 0
     )
@@ -50,9 +48,7 @@ def num_nodes(n: SumNode | ChoiceNode) -> int:
     if isinstance(n, SumNode)
     else n.children.values()
   )
-  return 1 + sum(
-    num_nodes(c) for c in children
-  )
+  return 1 + sum(num_nodes(c) for c in children)
 
 
 def to_dot(node: SumNode, cells: list[str]):
