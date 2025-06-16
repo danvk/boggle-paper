@@ -41,18 +41,18 @@ boards found via hillclimbing are, in fact, the global optima.
 The words that can be found on a Boggle board are determined by the
 letters on the board and by the choice of dictionary. In this paper,
 we'll use the ENABLE2K word list, which was developed by Alan Beale in
-1997 and 2000. This word list contains 173,528 entries. Unlike wordlist
-designed for Scrabble, in which it's impossible to play words longer than
-15 letters, ENABLE2K has no limit on word length.
+1997 and 2000. This word list contains 173,528 entries. Many wordlists
+are designed for Scrabble, and do not contain words longer than 15 letters.
+ENABLE2K has no limit on word length.
 
 We adopt the following terminology and conventions:
 
 - $B$ refers to a Boggle board. To refer to a specific Boggle board, we
   write out the letters of the board in row-major order. (This
   distinction is only important for non-square dimensions such as 2x3
-  and 3x4 Boggle, which lack reflectional symmetry.)
+  and 3x4 Boggle, which lack rotational symmetry.)
 - Because one of the Boggle dice contains a “Qu” (two letters), we adopt
-  the convention that `q` indicates a Qu cell. So `qaicdrneetasnnil`
+  the convention that `q` indicates a Qu cell. So `rpqaselinifcoita`
   refers to the board in Figure N.
 - Boggle dice use uppercase letters (except for Qu), but we typically
   use lowercase. No meaningful distinction is drawn between uppercase
@@ -112,7 +112,7 @@ With a pool size of N=500, this usually (95/100 times) converges with
 the highest-scoring board as `perslatgsineters` (@best-board), which contains 1,045
 words and scores 3,625 points using ENABLE2K.
 
-This makes one wonder whether this board is, in fact, the global
+This consistent result makes one wonder whether this board is, in fact, the global
 optimum. The principal result of this paper is to show that it is.
 
 == Proof of Maximality
@@ -145,7 +145,7 @@ space, it's not enough to make exhaustive search feasible, and this will
 not prove to be a useful constraint. In practice, all high-scoring boards
 can be rolled in many ways with the Boggle dice.
 
-Two observations suggest a path towards a solution:
+Two other observations suggest a path towards a solution:
 
 + Similar boards have similar sets of words on them. Finding the score
   of a board and that of its neighbors involves large amounts of
@@ -195,7 +195,8 @@ while Queue is non-empty:
 The appeal of this approach is that, when $"bound"(S)$ is low, we can
 discard the entire set $S$ without having to evaluate every board in it.
 
-Now we need to define the branch and bound operations.
+We need to define the branch and bound operations, but first we'll consider sets
+of Boggle boards.
 
 === Board classes and the branch operation
 <board-classes-and-the-branch-operation>
@@ -209,9 +210,9 @@ For example, here's a 3x3 board class where each cell can be one of two
 letters:
 
 #boggle.board(
-  [{A,B}], [{G,H}], [{M,N}],
-  [{C,D}], [{I,J}], [{O,P}],
-  [{E,F}], [{K,L}], [{Qu,R}]
+  [{A, B}], [{G, H}], [{M, N}],
+  [{C, D}], [{I, J}], [{O, P}],
+  [{E, F}], [{K, L}], [{Qu, R}]
   , caption: [A 3x3 board class containing 512 boards]
 )
 
@@ -348,18 +349,22 @@ We need to define a few basic operations on these trees.
 We can define a path as a sequence of cells and letters on those cells:
 
 ```
-Path p = list((cell, letter))
+Path = list[(int, char)]  # (cell, letter)
 ```
 
 Then we can define `add_word`:
 
 #code.from_src("/src/listings/add_word.py")
 
+A Sum/Choice tree is an efficient way to represent the words in a Boggle board class
+because it stores each unique path to a word once, even though this same path may be
+valid for many individual boards in the class.
+
 Next we define the “Force” operation, $F$. This sums all the paths to words found on a specific board class.
 
 $ F(n: "SumNode", B) := n."points" + sum_(n."children") F(c, B) \
 F(n: "ChoiceNode", B) := cases(
-  F(n."choices"[B_(n."cell")], B) \ #h(0.5em) "if" B_(n."cell") in n."choices",
+  F(n."children"[B_(n."cell")], B) \ #h(0.5em) "if" B_(n."cell") in n."children",
   0 "else",
 ) $
 
@@ -397,18 +402,16 @@ We're now ready to build trees.
   , breakable: false
 )
 
-We can define a "upper bound" operation, $U$, on sum/choice trees:
+Next, we can define an "upper bound" operation, $U$, on sum/choice trees:
 
-```
-U(n: SumNode)
-  = n.points + sum(U(c) for c in n.children)
-U(n: ChoiceNode)
-  = max(U(c) for c in n.children)
-```
+$
+U(n: "SumNode") &:= n."points" + sum_(n."children") U(c) \
+U(n: "ChoiceNode") &:= "max"_(c in n."children") U(c)
+$
 
 To show that this is a valid upper bound, we'll explore its relationship with the Force operation, $F$.
 
-*Lemma*: $U(T) >= F(T, B) forall T, B$
+*Lemma*: $U(T) >= F(T, B) #h(0.5em)forall T, B$
 
 For a SumNode, the definition of $U$ and $F$ are identical. For a ChoiceNode, $F$ picks an individual child, whereas $U$ takes the max across all its children. Hence $F(n) <= U(n)$ for ChoiceNodes as well.
 
@@ -426,7 +429,7 @@ $ M(B) := F(T, B) $
 
 *Lemma*: $M(B) >= S(B)$
 
-This is clearly true, since the regular Boggle score includes each unique word once, whereas the Multiboggle score might include it multiple times. If a board does not contain any repeat letters, then $M(B) = S(B)$.
+This is clearly true, since the regular Boggle score counts each unique word once, whereas the Multiboggle score might count it multiple times. If a board does not contain any repeat letters, then $M(B) = S(B)$.
 
 *Theorem*: If $T = "BuildTree"(C)$, then $ U(T) >= S(B) #h(0.5em) forall B in C $
 
@@ -486,7 +489,7 @@ On this board class, for example:
   [{A, O}], [D]
 )
 
-- There are three words that use all four cells: DATE, DOTE and TOED. So for this set of cells, it's better to pick "O" than "A."
+- There are two words that use all four cells with an "O:" DOTE and TOED. But only DATE uses all four with an "A." So for this set of cells, it's better to pick "O" than "A."
 - There are many words that use "T," "E" and "A:" ATE, ETA, EAT, TEA. But there's only one word that uses "T," "E" and "O:" TOE. So for these cells, it's better to pick "A" than "O."
 
 These two are summed. Of course, the cell can't be both an "A" and an "O" at the same time, so this inconsistent choice results in an overcount. The bound is 10, whereas both boards score 8. (The "spelling order" bound is 11.)
@@ -498,7 +501,8 @@ is more dramatic for larger board classes:
   align(center)[#table(
   columns: 3,
   align: (right,right,right,),
-  table.header([#strong[Board];], [#strong[Unordered];], [#strong[Ordered];],),
+  table.header([], table.cell(colspan: 2, align:center)[#strong[Bound on Root]],
+  [#strong[Board];], [#strong["Spelling"];], [#strong["Orderly"];],),
   table.hline(),
   [2x2], [13], [7],
   [3x3 (a)], [6,361], [503],
@@ -512,7 +516,7 @@ is more dramatic for larger board classes:
   , kind: table
   )
 
-When we work with Sum/Choice trees, we are fundamentally working with the Multiboggle score, rather than the true Boggle score. For most boards, $M(B)$ is close to $S(B)$. Since we have
+The bound might also be an overcount if there are repeat letters and we double-count a word. When we work with Sum/Choice trees, we are fundamentally working with the Multiboggle score, rather than the true Boggle score. For most boards, $M(B)$ is close to $S(B)$. Since we have
 considerable “wiggle room” between the average score of a board (\~40
 points) and the score of the best board (3625), working with the
 Multiboggle score is usually an acceptable concession. What we'll seek is boards
@@ -521,7 +525,7 @@ $S(B) >= S_"high"$ as well using a regular Boggle solver.
 
 While $M(B)$ is usually close to $S(B)$, there are some
 pathological cases where this breaks down. For example, the board in
-Figure N has $S(B) = 189$, but $M(B) = 21953$! (The word
+Figure N has $S(B) = 189$, but $M(B) = 21,953$! (The word
 “reservers” can be found in 100 distinct ways.) We will partially
 address this issue later in the paper.
 
@@ -554,13 +558,13 @@ is satisfied and zero if it is not satisfied.
 - If the clause contains a single term $a$, then we model this as a
   ChoiceNode on cell $a$.
 - If the clause is $a or b$, we model is as a tree with two layers of
-  `ChoiceNode`s.
+  ChoiceNodes.
 - If the clause is $a or b or c$, we model it as a tree with three
-  layers of `ChoiceNode`s.
+  layers of ChoiceNodes.
 
 // TODO: show one of these
 
-Finally, we create a root `SumNode` $T$ with the $m$ `ChoiceNode`s as
+Finally, we create a root SumNode $T$ with the $m$ ChoiceNodes as
 children. By construction, $exists B | F(T, B) = m$ iff there
 are $x_i$ that satisfy the 3-SAT problem. So if we can solve the
 satisfiability problem for Sum/Choice trees, we can also solve it for
@@ -577,17 +581,17 @@ that Boggle maximization itself is NP-Hard, since not every Sum/Choice
 tree corresponds to a Boggle board. Still, it is suggestive that this is
 a hard problem.
 
-=== OrderlyMerge
+=== Merge Operation
 <orderlymerge>
-With Orderly Trees defined, we're finally ready to perform operations on
+With Sum/Choice Trees defined, we're finally ready to perform operations on
 them. Our first goal will be to speed up the “branch” operation and
 calculation of the subsequent bound. This requires forcing a single cell
 in the board class to be each of its possible letters and constructing
-the resulting Orderly Trees.
+the resulting trees.
 
 In practice, it makes the most sense to force the top choice in the
 tree, i.e. the one with the first position in the canonical order. This
-requires a “merge” operation on Orderly Trees, which is straightforward to
+requires a “merge” operation on orderly trees, which is straightforward to
 implement as in Listing N.
 
 #code.from_src("/src/listings/merge.py")
@@ -598,8 +602,8 @@ F("merge"(T_1, T_2), B) = F(T_1, B) + F(T_2, B) $
 No cells are destroyed by `merge`, and points are added when there's a collision.
 
 With the `merge` helper, we can define the “branch” operation.
-Note that `N` here isn't really a free parameter; if the tree is
-$"Orderly"(N)$, then we must use this value of $N$.
+Note that `N` here isn't really a free parameter; if we have an orderly tree with $N$ cells,
+then we must use this value of $N$.
 
 #code.from_src("/src/listings/merge.py", start: "branch operation")
 
@@ -609,8 +613,8 @@ the words that go through the “top” cell (`top_choice`) and another
 `top_choice` corresponds to a particular choice of letter on that cell.
 Every word must fall into one of these two groups (goes through the cell
 or doesn't). Adding their bounds will produce a valid bound for this
-choice of letters. Since the `merge` operation preserves the invariant,
-the resulting tree will have a valid bound.
+choice of letters. Since the `merge` operation distributes over the Force
+function $F$, the resulting tree will have a valid bound.
 
 // TODO: a visual would convey the intuition here, that “branch” is just a merge.
 
@@ -634,23 +638,23 @@ A few observations:
 
 // TODO: show merge T I AE R tree?
 
-Here are the results of the first `branch` call on the Orderly Tree for
+Here are the results of the first `branch` call on the tree for
 the 5 million board 3x3 board class from before.
 
 #figure(
   align(center)[#table(
-  columns: (20%, 20%, 20%, 20%, 20%),
+  columns: (25%, 25%, 25%, 25%),
   align: (bottom,bottom + right,bottom+right,bottom+right,bottom+right,),
   table.header([#strong[Center
     Cell];], [#strong[Nodes];], [#strong[Bound];], [#strong[True
-    Max];], [#strong[max\_ bound];],),
+    Max];],),
   table.hline(),
-  [aeiou], [333,492], [1,523], [545], [9,460],
-  [a], [86,420], [1,198], [545], [6,120],
-  [e], [98,585], [1,417], [520], [7,023],
-  [i], [81,062], [994], [503], [6,231],
-  [o], [75,474], [862], [392], [5,525],
-  [u], [60,457], [753], [326], [4,464],
+  [aeiou], [333,492], [1,523], [545],
+  [a], [86,420], [1,198], [545],
+  [e], [98,585], [1,417], [520],
+  [i], [81,062], [994], [503],
+  [o], [75,474], [862], [392],
+  [u], [60,457], [753], [326],
   )]
   , kind: table
   )
@@ -658,15 +662,15 @@ the 5 million board 3x3 board class from before.
 === OrderlyBound
 <orderlybound>
 The `branch` operation on its own is sufficient to implement Branch and
-Bound with Orderly Trees. Eventually we'll merge all the way down to a
-single `SumNode`, which represents a candidate board.
+Bound with Sum/Choice Trees. Eventually we'll merge all the way down to a
+single SumNode, which represents a candidate board.
 This allocates additional nodes, however, and we may wish to save RAM
-by not doing that all the way to single boards.
+and compute by not doing that all the way to single boards.
 
 Instead, we can define an alternative algorithm, `OrderlyBound`, which
 refines the bound on a tree by traversing it, rather than merging
 subtrees. We'll maintain a stack of pointers to
-`ChoiceNodes`. To “branch,” we'll pop off the ChoiceNodes
+ChoiceNodes. To "branch,"" we'll pop off the ChoiceNodes
 for the next cell and, for each choice, push all the next child cells.
 We can maintain a bound as we do this. If the bound
 ever drops below $S_"high"$, we can abandon this search path.
@@ -689,9 +693,9 @@ returns early.
 If $b < S_"high"$, then we have:
 
 $
-& b = "points" + sum_(c in "stack") U(c) \
-&= "points" + sum_(c in "stack") F(c, B) \
-&= M(B) < S_"high" forall B
+S_"high" > b &= "points" + sum_(c in "stack") U(c) \
+&>= "points" + sum_(c in "stack") F(c, B) \
+&= M(B) #h(0.5em) forall B
 $
 
 and therefore there are no high-scoring boards.
@@ -740,7 +744,7 @@ seems to work well in practice (see @switchover-table).
   [0 (Branch)], [175.4], [2.06], [5,406,460,230],
   )]
   , kind: table
-  , caption: [The effect of switchover score on runtime and memory usage for a single board class. $S_"high"$ was 3,500. Nodes is the total number of nodes that were allocated during Branch and Bound, not peak nodes.]
+  , caption: [The effect of switchover score on runtime and memory usage for a single board class. $S_"high"$ was 3,500. The initial bound was 30,806. Nodes is the total number of nodes that were allocated during Branch and Bound, not peak nodes.]
   )
 <switchover-table>
 
@@ -756,15 +760,14 @@ converge on the Multiboggle score, they'll bog down on the board classes
 containing these highly duplicative boards, and we'll wind up having to
 score many millions of Boggle boards to filter them out.
 
-We can improve the situation slightly. Consider the BEE/FEE/BEEF board
-from earlier:
+We can improve the situation slightly. Here's a 2x3 board containing three words, BEE, FEE, and BEEF.
 
 #boggle.board(
   [E], [B], [E],
   [E], [F], [E],
 )
 
-The max bound counted each of these words four times. If we consider
+The Multiboggle score counts each of these words four times. If we consider
 this in the context of a board class, however:
 
 #boggle.board(
@@ -772,7 +775,7 @@ this in the context of a board class, however:
   [{E,X}], [F], [{E,X}],
 )
 
-we can see that “BEE” can be found on the left only when both cells are
+we can see that BEE can be found on the left only when both cells are
 E, not X, and similarly on the right. But when both of the left cells
 are E, we know that these paths to BEE, FEE and BEEF will only count
 once towards the true Boggle score. Both of the left paths to BEE:
@@ -834,7 +837,7 @@ Here's the final Branch and Bound algorithm for finding Boggle boards
 $B$ with $S(B) >= S_"high"$:
 
 + Enumerate all possible board classes, filtering for symmetry.
-+ For each board class $C$, build an Orderly Tree with deduping.
++ For each board class $C$, build a Sum/Choice tree with deduping.
 + Repeatedly call `branch` until either:
   + $U("node") < S_"high"$ in which case this board class can be eliminated.
   + $U("node") <= 1.5 S_"high"$ in which case we switch to `OrderlyBound`. This will output a list of boards $B in C$ such that $D(B) >= S_"high"$.
@@ -856,21 +859,21 @@ The Branch and Bound procedure based on Orderly Trees is dramatically faster tha
 letter buckets on a single core, the Branch and Bound procedure completes in just 70 seconds. Compared to the 12 days it would have taken for exhaustive search, this represents a 15,000x speedup.
 
 Using ENABLE2K, this search finds 42 distinct boards (up to symmetry) that score 500 points or more. Each of these boards can also
-be found via the hillclimbing procedure, which gives us confidence that
-it is an effective way to find the global maximum.
+be found via the hillclimbing procedure.
 
 For 3x4 Boggle, we use two letter buckets in the four corners and three buckets for the other eight cells. The Branch and Bound procedure completes in 5h54m on
 a single core. This represents a 3,000,000x speedup compared to the
 2,000 CPU years that exhaustive search would have required.
 
-This search finds 33 distinct boards that score 1,500 points or more. Again, each of these boards can also be found via the hillclimbing procedure.
+This search finds 33 distinct boards that score 1,500 points or more. Again, each of these boards can also be found via the hillclimbing procedure. This gives us confidence that
+it is an effective way to find the global maximum.
 
 === Results for 4x4
 <result-for-4x4>
-Three 4x4 runs were completed, with the ENABLE2K, OSPD5 and NASPA2023 word lists. The former was completed before the “deduped Multiboggle” optimization, and its runtime was longer. The same bucketing was used as 3x4: two buckets in the corners, three in the other cells.
+Three 4x4 runs were completed, with the ENABLE2K, OSPD5 and NASPA2023 word lists. The same bucketing was used as 3x4: two buckets in the corners, three in the other cells.
 
 - *ENABLE2K*: Found 32 boards with Score$>=$3500 in 23,000 CPU hours
-  #footnote[This run did predated the deduped multiboggle optimization, so it ran considerably slower than the other runs.]
+  #footnote[This run predated the deduped multiboggle optimization, so it ran considerably slower than the other runs.]
 - *OSPD5*: Found 46 boards with Score$>=$3600 in 7,500 CPU hours
 - *NASPA2023*: Found 40 boards with Score$>=$3700 in 9,000 CPU hours.
 
@@ -908,12 +911,12 @@ for OSPD5 is the \#2 board for ENABLE2K.
 Instead of seeking the highest-scoring board, we might instead be
 interested in finding the board with the most words on it. This
 is a straightforward modification of the problem. We simply change the
-`SCORE` array to contain all 1s. Then all the tools developed in this
+`SCORES` array to contain all 1s. Then all the tools developed in this
 paper work exactly as before.
 
 Hillclimbing is also effective at solving this problem. For 3x4 Boggle,
 the “wordiest” board found via hillclimbing matches the global max found
-via Branch and Bound. While we haven't run a Branch and Bound search for
+via Branch and Bound. While no exhaustive search has been conducted for
 the wordiest 4x4 board, we'd expect the hillclimbing winner to be the
 global optimum here as well.
 
@@ -931,9 +934,9 @@ two columns are identical to those of the highest-scoring board.
 
 === Variation: Powers of Two Boggle
 <variation-powers-of-two-boggle>
-It's surprising that you score more points for longer words, but only up
+It's an interesting quirk that you score more points for longer words, but only up
 to eight letters. What if you kept getting more points for longer words?
-We can set `SCORES=[0, 0, 0, 1, 2, 4, 8, 16, ...]` to play “powers of two”
+We can set `SCORES=[0, 0, 0, 1, 2, 4, 8, 16, 32, …]` to play “powers of two”
 Boggle, where a three letter word is still worth one point, but an eight
 letter word is worth 32, a sixteen letter word is worth 8,192 points and
 a seventeen letter word (which must contain a Qu) is worth 16,384
@@ -944,7 +947,7 @@ board in this version of Boggle. The best board found in 50 hillclimbing
 runs was `cineqetnsniasesl` (28,542 points). However, we can
 exhaustively search all boards containing a 17-letter word to find
 `rpqaselinifcoita` (44,726 points). Over a third of this board's points
-come from the single word “prequalifications.”
+come from the single 17-letter word “prequalifications.”
 
 #boggle.board(
   [R], [P], [Qu], [A],
@@ -956,7 +959,7 @@ come from the single word “prequalifications.”
 )
 
 This failure gives us some insights into why hillclimbing is effective
-at finding the highest-scoring and wordiest boards. Those scores both
+at finding the highest-scoring and wordiest boards. Those score functions both
 produce a smooth fitness landscape, where single character variations on
 a board produce relatively small changes to its score. This means that
 the optimal boards are surrounded by other high-scoring boards, and hill
@@ -972,10 +975,10 @@ likely to remove the longest word on a great board.
 
 == Future Work
 <future-work>
-Branch and Bound with Orderly Trees is extremely effective at exploiting
+Branch and Bound with Sum/Choice trees is extremely effective at exploiting
 the structure inherent in Boggle, making global searches over the 4x4
 board space feasible in a data center. This still takes a lot of
-compute, however, enough that we haven't performed full searches for
+compute, however, enough that full searches have not been conducted for
 every wordlist, for other languages, or for the most word-dense boards.
 Further incremental optimizations and reductions in compute costs might
 make this more attractive.
@@ -1000,6 +1003,7 @@ different approach is required.
   [5x5], [\~1B years],
   )]
   , kind: table
+  , caption: [Branch and Bound search time for various board sizes. Times for 4x5 and 5x5 are estimates.]
   )
 
 Here are a few alternative approaches that would be interesting to
@@ -1009,7 +1013,8 @@ explore:
   maximization onto well-known SAT problems. These problems are often
   tackled using ILP Solvers like Z3, OR-Tools or Gurobi. A preliminary
   investigation didn't show much promise here, but this is a large field
-  and there may be some better way to frame the problem.
+  and more experienced practitioners may be able to use these tools to
+  greater effect.
 - #strong[GPU acceleration] The process described in this paper relies
   entirely on the CPU. But the biggest advances in recent years have
   come from GPUs. It's not immediately clear how Boggle maximization as
@@ -1029,7 +1034,7 @@ explore:
 == Conclusions
 <conclusions>
 
-Using Branch and Bound, Orderly Trees, and some tailor-made algorithms,
+Using Branch and Bound, Sum/Choice trees, and some tailor-made algorithms,
 we're able to achieve a factor of a billion speedup over brute-force
 search. This is enough to prove that the highest-scoring board found via
 hillclimbing is, in fact, the global optimum. It's likely that hillclimbing

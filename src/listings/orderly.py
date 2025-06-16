@@ -31,8 +31,8 @@ def set_size(num_cells: int):
 ORDER = SPLIT_ORDER[(4, 4)]
 
 
-# Listing 8: Building an orderly tree
-def build_orderly_tree(board_class, trie):
+# Listing 4: Building a tree
+def build_tree(board_class, trie):
   root = SumNode()
 
   def choice_step(idx, trie, choices):
@@ -67,7 +67,7 @@ def main():
   t = make_trie("wordlists/enable2k.txt")
   board_class = sys.argv[1:]
   set_size(len(board_class))
-  tree = build_orderly_tree(board_class, t)
+  tree = build_tree(board_class, t)
   points = bound(tree)
   n_nodes = num_nodes(tree)
   sys.stderr.write(

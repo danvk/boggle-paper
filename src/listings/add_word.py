@@ -24,7 +24,9 @@ def set_size(num_cells: int):
   NEIGHBORS = ALL_NEIGHBORS[(m, n)]
 
 
-Path = list[(int, int)]
+type char = str
+
+Path = list[(int, char)]
 
 
 def find(xs, fn):
@@ -34,7 +36,7 @@ def find(xs, fn):
   return None
 
 
-# Listing 7: add_word to sum/choice tree
+# Listing 3: add_word to sum/choice tree
 def add_word(
   node: SumNode, path: Path, points: int
 ):
@@ -110,9 +112,7 @@ def main():
   set_size(len(board_class))
   tree = build_tree_alt(board_class, t)
   points = bound(tree)
-  sys.stderr.write(
-    f"{board_class}: {points}\n"
-  )
+  sys.stderr.write(f"{board_class}: {points}\n")
   print(to_dot(tree, board_class))
   # poetry run python -m paper.3b_max_tree lnrsy chkmpt lnrsy aeiou aeiou aeiou chkmpt lnrsy bdfgjqvwxz
   # ['lnrsy', 'chkmpt', 'lnrsy', 'aeiou', 'aeiou', 'aeiou', 'chkmpt', 'lnrsy', 'bdfgjqvwxz']: 9460

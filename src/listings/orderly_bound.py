@@ -62,7 +62,7 @@ def record_candidate_board(
   print(f"{bound} {bd}")
 
 
-# Listing 11: orderly_bound
+# Listing 7: orderly_bound
 # Assumes N >= 1
 def orderly_bound(
   root: SumNode,  # Orderly(N)

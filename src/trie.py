@@ -51,9 +51,7 @@ class Trie:
     letter = word[0]
     if not self.has_child(letter):
       self._children[letter] = Trie()
-    return self.child(letter).add_word(
-      word[1:]
-    )
+    return self.child(letter).add_word(word[1:])
 
   def size(self):
     return (1 if self.is_word() else 0) + sum(

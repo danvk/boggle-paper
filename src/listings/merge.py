@@ -36,7 +36,7 @@ def set_size(num_cells: int):
 ORDER = SPLIT_ORDER[(4, 4)]
 
 
-# Listing 9: merge operation on orderly trees
+# Listing 5: merge operation on orderly trees
 def merge(a: SumNode, b: SumNode) -> SumNode:
   by_cell = {c.cell: c for c in a.children}
   for bc in b.children:
@@ -63,7 +63,7 @@ def merge_choice(
 # /Listing
 
 
-# Listing 10: branch operation on orderly trees
+# Listing 6: branch operation on orderly trees
 def branch(
   o: SumNode,
   N: int,
@@ -83,7 +83,9 @@ def branch(
     children=other_choices, points=o.points
   )
   return [
-    merge(top_choice.children[letter], skip_tree)
+    merge(
+      top_choice.children[letter], skip_tree
+    )
     if top_choice.children.get(letter)
     else skip_tree  # dead letter on cell N.
     for letter in board_class[N]
