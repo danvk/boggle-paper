@@ -35,6 +35,7 @@ boards found via hillclimbing are, in fact, the global optima.
   [T], [E], [R], [S],
   caption: [The highest-scoring Boggle board for the ENABLE2K dictionary, with 1,045 words and 3,625 points. The longest word is "replastering."]
 )
+<best-board>
 
 == Terminology and Conventions
 <terminology-and-conventions>
@@ -53,12 +54,12 @@ We adopt the following terminology and conventions:
   and 3x4 Boggle, which lack rotational symmetry.)
 - Because one of the Boggle dice contains a “Qu” (two letters), we adopt
   the convention that `q` indicates a Qu cell. So `rpqaselinifcoita`
-  refers to the board in Figure N.
+  refers to the board in @prequalifications.
 - Boggle dice use uppercase letters (except for Qu), but we typically
   use lowercase. No meaningful distinction is drawn between uppercase
   and lowercase in this paper.
 - The cells on an $M$x$N$ board are numbered $0...M N-1$ in row-major
-  order, as shown in Figure N. We refer to the letter on cell $i$ of
+  order, as shown in @cell-numbering. We refer to the letter on cell $i$ of
   board $B$ as $B_i$.
 - $"Words"(B)$ is the set of all words that can be found on the board $B$.
 - $S(B)$ is the sum of the point value of these words,
@@ -72,8 +73,7 @@ We adopt the following terminology and conventions:
   [12], [13], [14], [15],
   caption: [Numbering of cells on a 4x4 board.]
 )
-<best-board>
-// TODO: labels don't work for #boggle.board
+<cell-numbering>
 
 == Heuristics to find high-scoring boards
 <heuristics-to-find-high-scoring-boards>
@@ -514,7 +514,9 @@ is more dramatic for larger board classes:
   [4x4 (b)], [514,182], [53,037],
   )]
   , kind: table
+  , caption: [Examples of bounds on the trees for various board classes. The bound on "orderly" trees is consistently much lower than that of the "spelling order" trees.]
   )
+<board-bounds>
 
 The bound might also be an overcount if there are repeat letters and we double-count a word. When we work with Sum/Choice trees, we are fundamentally working with the Multiboggle score, rather than the true Boggle score. For most boards, $M(B)$ is close to $S(B)$. Since we have
 considerable “wiggle room” between the average score of a board (\~40
@@ -525,7 +527,7 @@ $S(B) >= S_"high"$ as well using a regular Boggle solver.
 
 While $M(B)$ is usually close to $S(B)$, there are some
 pathological cases where this breaks down. For example, the board in
-Figure N has $S(B) = 189$, but $M(B) = 21,953$! (The word
+@reservers has $S(B) = 189$, but $M(B) = 21,953$! (The word
 “reservers” can be found in 100 distinct ways.) We will partially
 address this issue later in the paper.
 
@@ -536,6 +538,7 @@ address this issue later in the paper.
   [R], [S], [R], [S]
   , caption: [Pathological board with Score(B)=189 but Multi(B)=21,953.]
 )
+<reservers>
 
 === Sum/Choice Satisfiability is NP-Hard
 <sumchoice-satisfiability-is-np-hard>
@@ -620,7 +623,7 @@ function $F$, the resulting tree will have a valid bound.
 
 Calling `branch` is considerably faster than building a new tree for
 each letter choice on a cell. For example, on the high-scoring 4x4 board
-class from Table N, `branch` split a center cell containing 12 letters
+class from @board-bounds, `branch` split a center cell containing 12 letters
 and returned 12 subtrees in 0.07s. Building the same trees from scratch
 took 4.0s, roughly a 60x difference.
 
@@ -921,7 +924,7 @@ the wordiest 4x4 board, we'd expect the hillclimbing winner to be the
 global optimum here as well.
 
 These boards have significant overlap with the highest-scoring boards.
-Table N shows the wordiest board for ENABLE2K. This is also the \#8 highest-scoring board. Its middle
+@wordiest shows the wordiest board for ENABLE2K. This is also the \#8 highest-scoring board. Its middle
 two columns are identical to those of the highest-scoring board.
 
 #boggle.board(
@@ -931,6 +934,7 @@ two columns are identical to those of the highest-scoring board.
   [S], [E], [R], [O]
   , caption: [The "wordiest" known board for ENABLE2K with 1,158 words and 3,569 points.]
 )
+<wordiest>
 
 === Variation: Powers of Two Boggle
 <variation-powers-of-two-boggle>
@@ -954,9 +958,9 @@ come from the single 17-letter word “prequalifications.”
   [S], [E], [L], [I],
   [N], [I], [F], [C],
   [O], [I], [T], [A]
-  , numbering: none
   , caption: [The best known board for "powers of two" Boggle, containing the 16,384-point word "prequalifications."]
 )
+<prequalifications>
 
 This failure gives us some insights into why hillclimbing is effective
 at finding the highest-scoring and wordiest boards. Those score functions both
