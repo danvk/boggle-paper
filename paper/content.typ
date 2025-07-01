@@ -14,17 +14,18 @@ point, 5=2, 6=3, 7=5, 8+=11 points).
 // TODO: add a visual of finding a word
 
 Finding all the words on a Boggle board has become a classic computer
-programming problem. It is often assigned in classes, used as an
-interview question and, more recently, given as a task to LLMs. With a
+programming problem.#cite(<adamovskyDeepSearchc10Best2009>)#cite(<boyanLearningEvaluationFunctions1998>)
+It is often assigned in classes#cite(<parham-mocelloUsingFunctionalBoard2022>), used as an
+interview question and, more recently, given as a task to LLMs.#cite(<deanTweet2025>) With a
 fast Boggle solver, it's natural to search for particularly high-scoring
 boards. Typically this is done via hillclimbing, simulated annealing or
-genetic algorithms. Searches of this kind date back to at least 1982.
+genetic algorithms. Searches of this kind date back to at least 1982.#cite(<frankHighScoringBoggle1982>)
 While these searches do produce high-scoring boards, they cannot make
 definitive statements about whether these are #emph[the] highest-scoring
 boards.
 
-This paper takes a different approach. By using Branch and Bound, a data
-structure tailor-made for Boggle, and a large amount of
+This paper takes a different approach. By using Branch and Bound, a decision
+tree-like data structure tailor-made for Boggle, and a large amount of
 compute, we're able to establish for the first time that the best Boggle
 boards found via hillclimbing are, in fact, the global optima.
 
@@ -94,7 +95,10 @@ boards per second.
 
 This speed can be used to attack a new problem: finding high-scoring
 boards. This is typically done via local search heuristics such as
-hillclimbing, simulated annealing, or genetic algorithms. A particularly
+hillclimbing#cite(<doCreatingDenseBoggle2002>),
+simulated annealing#cite(<gambleProgrammersAnalysisBoggle2016>),
+or genetic algorithms.#cite(<daveOptimizingBoggleBoards2009>)
+A particularly
 effective approach for Boggle is to iteratively explore around a pool of
 high-scoring boards, as shown in Listing 1.
 
@@ -107,8 +111,9 @@ Repeat until convergence:
   Pool = μ highest-scoring boards in Next
 ```
 
-This is similar to a $(mu+lambda)$-Evolutionary Strategy, the differences being that
-we try all neighbors (rather than a random sample) and terminate after convergence.
+This is similar to a $(mu+lambda)$-Evolutionary Strategy,#cite(<backOverviewEvolutionaryAlgorithms1993>)
+the differences being that
+we evaluate all neighbors (rather than a random sample) and terminate after convergence.
 Given the initial pool of boards, this converges to a deterministic result.
 
 We take an “edit” to mean changing one letter or swapping two letters.
@@ -169,7 +174,7 @@ precisely.
 Rather than exhaustive search, we use Branch and Bound to find the
 globally optimal board. Branch and Bound is an algorithm design paradigm
 dating back to the 1960s that narrows in on the global optimum by
-recursively subdividing the search space.
+recursively subdividing the search space.#cite(<lawlerBranchandboundMethodsSurvey1966>)
 
 To apply it, we need to define two operations on sets of Boggle boards:
 
@@ -544,10 +549,11 @@ address this issue later in the paper.
 )
 <reservers>
 
-Sum/Choice trees are reminiscent of Algebraic Decision Diagrams (ADDs), particularly in the
-way that fixing an order for the decisions results in more compact, efficient trees. The
-fundamental difference is the Sum nodes. To evaluate an ADD for a single set of choices, you
-descent the tree to a single, terminal node. Evaluating a Sum/Choice tree requires
+Sum/Choice trees are reminiscent of Algebraic Decision Diagrams (ADDs),#cite(<baharAlgebraicDecisionDiagrams1997>)
+particularly in the
+way that fixing an order for the decisions results in more compact, efficient trees.#cite(<bryantGraphBasedAlgorithmsBoolean1986>)
+The fundamental difference is the Sum nodes. To evaluate an ADD for a single set of choices,
+you descent the tree to a single, terminal node. Evaluating a Sum/Choice tree requires
 adding values from many subtrees.
 
 ADDs are "reduced" by factoring out identical subtrees to produce a DAG. This could be done
@@ -1066,3 +1072,5 @@ is so effective because the score function produces a relatively smooth
 fitness landscape. The approach taken in this paper requires solving an
 NP-Hard problem, and it will not scale well to 5x5 or 6x6 Boggle maximization,
 which remain well out of reach.
+
+#bibliography("references.bib")
