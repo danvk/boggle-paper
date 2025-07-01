@@ -100,15 +100,19 @@ high-scoring boards, as shown in Listing 1.
 
 ```
 # Listing 1: Hillclimbing Algorithm
-N = 500  # pool size
-Pool = N random Boggle Boards
+μ = 500  # pool size
+Pool = μ random Boggle Boards
 Repeat until convergence:
   Next = Pool + Boards within edit distance 1
-  Pool = N highest-scoring boards in Next
+  Pool = μ highest-scoring boards in Next
 ```
 
+This is similar to a $(mu+lambda)$-Evolutionary Strategy, the differences being that
+we try all neighbors (rather than a random sample) and terminate after convergence.
+Given the initial pool of boards, this converges to a deterministic result.
+
 We take an “edit” to mean changing one letter or swapping two letters.
-With a pool size of N=500, this usually (95/100 times) converges with
+With a pool size of μ=500, this usually (95/100 times) converges with
 the highest-scoring board as `perslatgsineters` (@best-board), which contains 1,045
 words and scores 3,625 points using ENABLE2K.
 
@@ -539,6 +543,22 @@ address this issue later in the paper.
   , caption: [Pathological board with Score(B)=189 but Multi(B)=21,953.]
 )
 <reservers>
+
+Sum/Choice trees are reminiscent of Algebraic Decision Diagrams (ADDs), particularly in the
+way that fixing an order for the decisions results in more compact, efficient trees. The
+fundamental difference is the Sum nodes. To evaluate an ADD for a single set of choices, you
+descent the tree to a single, terminal node. Evaluating a Sum/Choice tree requires
+adding values from many subtrees.
+
+ADDs are "reduced" by factoring out identical subtrees to produce a DAG. This could be done
+with Sum/Choice trees as well as a way to save memory, but this did not prove necessary to
+solve the 4x4 Boggle maximization problem.
+
+Both Sum/Choice trees and ADDs are graphical representations of functions, in this case $M(B)$.
+Constructing an ADD for this function would be impractical, because it would require an
+exponential number of edges. Since we don't care about $M(B)$ for each $B$, only a bound on it,
+building a tree with each $M(B)$ in a terminal node would be wasteful. The Sum nodes result in
+a more compact representation at the cost of being more difficult to work with.
 
 === Sum/Choice Satisfiability is NP-Hard
 <sumchoice-satisfiability-is-np-hard>
