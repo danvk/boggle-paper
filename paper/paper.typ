@@ -122,7 +122,7 @@ optimization techniques such as hillclimbing and simulated annealing can
 be used to find particularly high-scoring boards. The sheer number of
 possible Boggle boards has historically prevented an exhaustive search
 for the global optimum board. We apply Branch and Bound and a
-tailor-made data structure to perform the first such search. We find
+decision diagram-like data structure to perform the first such search. We find
 that the highest-scoring boards found via hillclimbing are, in fact,
 the global optima.],
   pagenumbering: "1",
