@@ -887,6 +887,8 @@ tasks in a MapReduce.
 == Results
 <results>
 
+The implementation can be found at https://github.com/danvk/hybrid-boggle/. The code is a mixture of C++ and Python, with the glue provided by pybind11.#cite(<pybind11>) Smaller runs were performed on the author's M2 MacBook Air, while larger runs were performed on C4 VMs (Intel Xeon) on Google Cloud Platform.
+
 === Results for 3x3 and 3x4 Boggle
 
 The Branch and Bound procedure based on orderly trees is dramatically faster than brute force search. For 3x3 Boggle with two
