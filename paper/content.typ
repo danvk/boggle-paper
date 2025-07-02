@@ -464,7 +464,7 @@ Here's a small 2x2 board class containing two individual boards:
   [{A, E}], [R]
 )
 
-@natural-tree and @orderly-tree show two trees for this board class, the first without word reordering ("spelling order") and the second with reording (an "orderly tree").
+@natural-tree and @orderly-tree show two trees for this board class, the first without word reordering ("spelling order") and the second with reordering (an "orderly tree").
 
 #figure(image("tree.svg"),
   caption: [
@@ -693,7 +693,7 @@ the 5 million board 3x3 class from @5mclass.
   , kind: table
   )
 
-=== OrderlyBound
+=== Orderly Bound Operation
 <orderlybound>
 The `branch` operation on its own is sufficient to implement Branch and
 Bound with Sum/Choice Trees. Eventually we'll merge all the way down to a
@@ -874,7 +874,7 @@ $B$ with $S(B) >= S_"high"$:
 + For each board class $C$, build a Sum/Choice tree with deduping.
 + Repeatedly call `branch` until either:
   + $U("node") < S_"high"$ in which case this board class can be eliminated.
-  + $U("node") <= 1.5 S_"high"$ in which case we switch to `OrderlyBound`. This will output a list of boards $B in C$ such that $D(B) >= S_"high"$.
+  + $U("node") <= 1.5 S_"high"$ in which case we switch to `orderly_bound`. This will output a list of boards $B in C$ such that $D(B) >= S_"high"$.
 + For each such board $B$, check whether $S(B) >= S_"high"$.
 
 This will produce a list of all boards $B$ (up to symmetry) with

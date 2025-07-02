@@ -8,5 +8,14 @@
         "editor.formatOnSave": true,
         "editor.indentSize": 2
     },
-    "tinymist.rootPath": "${workspaceFolder}"
+    "tinymist.rootPath": "${workspaceFolder}",
+    "cSpell.words": [
+        "duplicative",
+        "forall",
+        "hillclimbing",
+        "Multiboggle",
+        "pybind",
+        "satisfiability",
+        "wordlist"
+    ]
 }
